@@ -1,0 +1,60 @@
+{
+  "name": "kesennuma-digital-experiences",
+  "version": "1.0.0",
+  "description": "3D geospatial storytelling platform for Kesennuma, Japan",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "type-check": "tsc --noEmit",
+    "cesium:copy": "node scripts/copy-cesium-assets.js",
+    "db:migrate": "prisma migrate dev",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:reset": "prisma migrate reset --force",
+    "db:studio": "prisma studio",
+    "postinstall": "prisma generate"
+  },
+  "dependencies": {
+    "cesium": "^1.121.1",
+    "next": "^15.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "@prisma/client": "^5.20.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "typescript": "^5.5.3",
+    "tailwindcss": "^3.4.1",
+    "postcss": "^8.4.38",
+    "autoprefixer": "^10.4.19",
+    "prisma": "^5.20.0",
+    "tsx": "^4.19.0",
+    "fs-extra": "^11.2.0",
+    "@types/fs-extra": "^11.0.4",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "^15.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "keywords": [
+    "cesium",
+    "geospatial",
+    "storytelling",
+    "kesennuma",
+    "3d",
+    "mapping",
+    "nextjs"
+  ],
+  "author": "Kesennuma Hackatsuon 2025",
+  "license": "MIT"
+}

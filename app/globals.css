@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom focus ring for accessibility */
+.focus-ring {
+  @apply ring-2 ring-brand-500 ring-offset-2 outline-none;
+}
+
+/* Smooth transitions */
+* {
+  @apply transition-colors;
+}
+
+/* Remove transition for motion-reduced */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    @apply transition-none;
+  }
+}
+
+/* Base styles */
+body {
+  @apply bg-slate-50 text-slate-900;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Kaku Gothic ProN',
+    'Yu Gothic', sans-serif;
+}
+
+/* Headings */
+h1,
+h2,
+h3 {
+  @apply font-bold;
+}
+
+/* Links */
+a {
+  @apply text-brand-600 hover:text-brand-700 underline;
+}
+
+/* Buttons */
+button:disabled {
+  @apply opacity-50 cursor-not-allowed;
+}
+
+/* Form inputs */
+input,
+textarea,
+select {
+  @apply focus:ring-2 focus:ring-brand-500 focus:border-brand-500;
+}
