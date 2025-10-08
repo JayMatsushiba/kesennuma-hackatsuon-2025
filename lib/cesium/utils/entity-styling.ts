@@ -112,8 +112,17 @@ export function customizeDataSourceEntities(
   const entities = dataSource.entities.values;
 
   entities.forEach((entity: any, index: number) => {
-    const feature = features.find((f) => f.id === entity.id);
-    if (!feature) return;
+    // Try to match by ID first, then by index as fallback
+    let feature = features.find((f) => f.id === entity.id);
+    if (!feature && index < features.length) {
+      feature = features[index];
+      console.log(`⚠️ Entity ${entity.id} matched by index to feature ${feature.id}`);
+    }
+
+    if (!feature) {
+      console.error(`❌ No feature found for entity ${entity.id} at index ${index}`);
+      return;
+    }
 
     // Apply description
     entity.description = createEntityDescription(feature);
@@ -124,6 +133,8 @@ export function customizeDataSourceEntities(
 
     // Store original feature data for later access
     entity._kesennumaFeature = feature;
+
+    console.log(`✅ Styled marker: ${feature.properties.title}`);
   });
 }
 

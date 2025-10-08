@@ -54,7 +54,7 @@ export default function CesiumViewer({
   // Camera controls
   const { flyToViewpoint, resetView } = useCameraControl({ viewer, Cesium });
 
-  // 3D Buildings
+  // 3D Buildings (OSM - 350M+ buildings worldwide)
   const {
     isLoading: buildingsLoading,
     toggleOSM,
@@ -63,7 +63,6 @@ export default function CesiumViewer({
     viewer,
     Cesium,
     enabled: show3DBuildings,
-    buildingType: 'osm',
   });
 
   const isLoading = viewerLoading || markersLoading || buildingsLoading;

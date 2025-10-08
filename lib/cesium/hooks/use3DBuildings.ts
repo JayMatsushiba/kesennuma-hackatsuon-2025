@@ -1,6 +1,6 @@
 /**
  * Hook for managing 3D buildings in Cesium
- * Supports OSM Buildings and Google Photorealistic 3D Tiles
+ * Uses OSM Buildings (350M+ buildings worldwide from OpenStreetMap)
  */
 
 'use client';
@@ -12,16 +12,13 @@ export interface Use3DBuildingsOptions {
   viewer: any | null;
   Cesium: CesiumModule | null;
   enabled?: boolean;
-  buildingType?: 'osm' | 'google' | 'both';
 }
 
 export interface Use3DBuildingsResult {
   osmBuildings: any | null;
-  googleBuildings: any | null;
   isLoading: boolean;
   error: Error | null;
   toggleOSM: (visible: boolean) => void;
-  toggleGoogle: (visible: boolean) => void;
   styleBuildings: (color: string, alpha?: number) => void;
 }
 
@@ -29,28 +26,25 @@ export function use3DBuildings({
   viewer,
   Cesium,
   enabled = true,
-  buildingType = 'osm',
 }: Use3DBuildingsOptions): Use3DBuildingsResult {
   const [osmBuildings, setOsmBuildings] = useState<any | null>(null);
-  const [googleBuildings, setGoogleBuildings] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  // Load OSM Buildings
+  // Load OSM Buildings (350M+ buildings worldwide)
   const loadOSMBuildings = useCallback(async () => {
     if (!viewer || !Cesium || !enabled) return;
-    if (buildingType !== 'osm' && buildingType !== 'both') return;
 
     try {
       setIsLoading(true);
-      console.log('Loading Cesium OSM Buildings...');
+      console.log('🏢 Loading Cesium OSM Buildings...');
 
       // Method 1: Modern API (Cesium 1.95+)
       try {
         const osmBuildingsTileset = await Cesium.createOsmBuildingsAsync();
         viewer.scene.primitives.add(osmBuildingsTileset);
         setOsmBuildings(osmBuildingsTileset);
-        console.log('✅ OSM Buildings loaded via createOsmBuildingsAsync');
+        console.log('✅ OSM Buildings loaded (350M+ buildings worldwide)');
       } catch (modernError) {
         console.warn('Modern API failed, trying legacy method:', modernError);
 
@@ -67,39 +61,11 @@ export function use3DBuildings({
       setError(err instanceof Error ? err : new Error('Failed to load OSM Buildings'));
       setIsLoading(false);
     }
-  }, [viewer, Cesium, enabled, buildingType]);
-
-  // Load Google Photorealistic 3D Tiles
-  const loadGoogleBuildings = useCallback(async () => {
-    if (!viewer || !Cesium || !enabled) return;
-    if (buildingType !== 'google' && buildingType !== 'both') return;
-
-    try {
-      setIsLoading(true);
-      console.log('Loading Google Photorealistic 3D Tiles...');
-
-      // Google Photorealistic 3D Tiles
-      // Note: Requires Google Maps Platform API key
-      const googleTileset = await Cesium.Cesium3DTileset.fromIonAssetId(2275207, {
-        show: true,
-      });
-
-      viewer.scene.primitives.add(googleTileset);
-      setGoogleBuildings(googleTileset);
-
-      console.log('✅ Google Photorealistic 3D Tiles loaded');
-      setIsLoading(false);
-    } catch (err) {
-      console.warn('Google 3D Tiles not available (may require subscription):', err);
-      // Not critical - OSM Buildings are the fallback
-      setIsLoading(false);
-    }
-  }, [viewer, Cesium, enabled, buildingType]);
+  }, [viewer, Cesium, enabled]);
 
   // Initial load
   useEffect(() => {
     loadOSMBuildings();
-    // loadGoogleBuildings(); // Uncomment if you have Google access
   }, [loadOSMBuildings]);
 
   // Toggle OSM Buildings visibility
@@ -111,17 +77,6 @@ export function use3DBuildings({
       }
     },
     [osmBuildings, viewer]
-  );
-
-  // Toggle Google Buildings visibility
-  const toggleGoogle = useCallback(
-    (visible: boolean) => {
-      if (googleBuildings) {
-        googleBuildings.show = visible;
-        viewer?.scene.requestRender();
-      }
-    },
-    [googleBuildings, viewer]
   );
 
   // Style buildings (color, transparency)
@@ -144,11 +99,9 @@ export function use3DBuildings({
 
   return {
     osmBuildings,
-    googleBuildings,
     isLoading,
     error,
     toggleOSM,
-    toggleGoogle,
     styleBuildings,
   };
 }
