@@ -336,34 +336,288 @@
 
 ## 5\. UML Diagrams
 
-Embed Mermaid for each relevant view.
+### 5.1 Class Diagram - Data Model
 
-```
-classDiagram   
-class ClassA {         +id : UUID         +doThing()     }    
-ClassB: derp
-ClassA --> ClassB : uses
+```mermaid
+classDiagram
+    class Story {
+        +Int id
+        +String title
+        +String description
+        +Float latitude
+        +Float longitude
+        +String mediaUrl
+        +String submitter
+        +String tags
+        +Boolean approved
+        +DateTime createdAt
+        +DateTime updatedAt
+    }
+
+    class Itinerary {
+        +UUID id
+        +String name
+        +String description
+        +Boolean featured
+        +DateTime createdAt
+    }
+
+    class ItineraryStop {
+        +UUID id
+        +UUID itineraryId
+        +Int storyId
+        +Int order
+        +JSON keyframe
+    }
+
+    class User {
+        +UUID id
+        +String email
+        +String name
+        +DateTime createdAt
+    }
+
+    class NFTCampaign {
+        +UUID id
+        +String name
+        +String description
+        +Int locationId
+        +Int requiredVisits
+        +String contractAddress
+        +Boolean active
+        +DateTime startDate
+        +DateTime endDate
+    }
+
+    class Visit {
+        +UUID id
+        +Int locationId
+        +String walletAddress
+        +DateTime timestamp
+        +String campaignId
+    }
+
+    class NFTStamp {
+        +UUID id
+        +String walletAddress
+        +UUID campaignId
+        +String tokenId
+        +String transactionHash
+        +DateTime mintedAt
+    }
+
+    Itinerary "1" --> "*" ItineraryStop : contains
+    ItineraryStop "*" --> "1" Story : references
+    Story "*" --> "0..1" User : submittedBy
+    NFTCampaign "1" --> "*" Visit : tracks
+    NFTCampaign "1" --> "*" NFTStamp : issues
+    Visit "*" --> "1" Story : atLocation
 ```
 
-```
+### 5.2 Sequence Diagram - Visitor Browses Itinerary
+
+```mermaid
 sequenceDiagram
-   participant User
-   participant API
-   participant DB
-   User->>API: [POST /do]
-   API->>DB: write()
-   DB-->>API: OK
-   API-->>User: 200 OK
+    participant Visitor
+    participant NextJS
+    participant CesiumViewer
+    participant API
+    participant Supabase
+
+    Visitor->>NextJS: Load homepage
+    NextJS->>API: GET /api/itineraries?featured=true
+    API->>Supabase: SELECT * FROM itineraries WHERE featured = true
+    Supabase-->>API: Return itineraries
+    API-->>NextJS: Return JSON
+    NextJS-->>Visitor: Display featured itineraries
+
+    Visitor->>NextJS: Click itinerary card
+    NextJS->>API: GET /api/itineraries/:id/stops
+    API->>Supabase: SELECT stops JOIN stories
+    Supabase-->>API: Return stops with story data
+    API-->>NextJS: Return JSON
+
+    NextJS->>CesiumViewer: Initialize with first stop keyframe
+    CesiumViewer->>CesiumViewer: Animate camera to position
+    CesiumViewer-->>Visitor: Display 3D view + story panel
+
+    Visitor->>CesiumViewer: Click "Next" button
+    CesiumViewer->>CesiumViewer: Calculate path to next stop
+    CesiumViewer->>CesiumViewer: Animate camera along path
+    CesiumViewer->>CesiumViewer: Show nearby pins during transit
+    CesiumViewer-->>Visitor: Arrive at next stop, display content
 ```
 
+### 5.3 Sequence Diagram - Contributor Submits Story
+
+```mermaid
+sequenceDiagram
+    participant Contributor
+    participant NextJS
+    participant SupabaseAuth
+    participant API
+    participant SupabaseStorage
+    participant SupabaseDB
+    participant Moderator
+
+    Contributor->>NextJS: Click "Share Your Story"
+    NextJS->>SupabaseAuth: Check auth status
+    SupabaseAuth-->>NextJS: Not authenticated
+    NextJS-->>Contributor: Show magic link form
+
+    Contributor->>SupabaseAuth: Submit email
+    SupabaseAuth->>Contributor: Send magic link email
+    Contributor->>SupabaseAuth: Click magic link
+    SupabaseAuth->>SupabaseDB: Create/update user record
+    SupabaseAuth-->>NextJS: Set auth cookie, redirect
+
+    NextJS-->>Contributor: Display submission form
+    Contributor->>NextJS: Fill form + upload media
+    NextJS->>NextJS: Validate form data
+
+    NextJS->>SupabaseStorage: Upload media files
+    SupabaseStorage-->>NextJS: Return file URLs
+
+    NextJS->>API: POST /api/stories
+    API->>API: Validate location bounds
+    API->>SupabaseDB: INSERT story (status: pending_review)
+    SupabaseDB-->>API: Return story record
+    API->>Moderator: Send notification (webhook/email)
+    API-->>NextJS: 201 Created
+    NextJS-->>Contributor: Show confirmation message
+
+    Moderator->>NextJS: Review story in admin panel
+    Moderator->>API: PATCH /api/stories/:id (approved: true)
+    API->>SupabaseDB: UPDATE story SET approved = true
+    SupabaseDB-->>API: OK
+    API-->>Moderator: Story published
 ```
-stateDiagram
-   [*] --> Idle
-   Idle --> Active : start()
-   Active --> Idle : stop()
-   Active --> Error : fail()
 
+### 5.4 Sequence Diagram - NFT Stamp Claim
 
+```mermaid
+sequenceDiagram
+    participant Visitor
+    participant NextJS
+    participant RainbowKit
+    participant Wallet
+    participant API
+    participant SmartContract
+    participant Base
+    participant SupabaseDB
+
+    Visitor->>Visitor: Scan QR code at physical location
+    Visitor->>NextJS: Open claim page (/nft/claim?campaign=xxx)
+    NextJS->>API: GET /api/campaigns/:id
+    API->>SupabaseDB: SELECT campaign details
+    SupabaseDB-->>API: Return campaign
+    API-->>NextJS: Return campaign info
+    NextJS-->>Visitor: Display campaign + "Connect Wallet"
+
+    Visitor->>RainbowKit: Click "Connect Wallet"
+    RainbowKit->>Wallet: Request connection
+    Wallet->>Visitor: Approve connection
+    Wallet-->>RainbowKit: Return wallet address
+    RainbowKit-->>NextJS: Connected (address, chainId)
+
+    NextJS->>NextJS: Check chainId === 8453 (Base)
+    alt Wrong network
+        NextJS->>RainbowKit: Request network switch
+        RainbowKit->>Wallet: Switch to Base
+        Wallet-->>RainbowKit: Network switched
+    end
+
+    NextJS->>API: POST /api/nft/check-eligibility
+    API->>SupabaseDB: SELECT visits WHERE walletAddress & campaignId
+    SupabaseDB-->>API: Return visit history
+    API->>API: Evaluate campaign rules (e.g., 2 visits required)
+
+    alt Not eligible
+        API-->>NextJS: { eligible: false, progress: "1/2 visits" }
+        NextJS-->>Visitor: Show progress message
+    else Eligible
+        API-->>NextJS: { eligible: true }
+        NextJS-->>Visitor: Show "Claim NFT" button
+
+        Visitor->>NextJS: Click "Claim NFT"
+        NextJS->>SmartContract: mintStamp(campaignId, walletAddress)
+        SmartContract->>Wallet: Request transaction approval
+        Wallet->>Visitor: Approve transaction
+        Visitor->>Wallet: Confirm
+        Wallet->>Base: Submit transaction
+        Base-->>Wallet: Transaction hash
+        Wallet-->>SmartContract: Transaction submitted
+        SmartContract-->>NextJS: Transaction hash
+
+        NextJS->>NextJS: Wait for confirmation (poll Base)
+        Base-->>NextJS: Transaction confirmed
+
+        NextJS->>API: POST /api/nft/record-mint
+        API->>SupabaseDB: INSERT nft_stamps record
+        API->>SupabaseDB: INSERT visit record
+        SupabaseDB-->>API: OK
+        API-->>NextJS: Mint recorded
+
+        NextJS-->>Visitor: Show success animation + NFT artwork
+    end
+```
+
+### 5.5 State Diagram - Story Lifecycle
+
+```mermaid
+stateDiagram-v2
+    [*] --> Draft: User starts submission
+    Draft --> Validating: Submit form
+    Validating --> Draft: Validation errors
+    Validating --> Uploading: Validation passed
+    Uploading --> Uploading: Upload media files
+    Uploading --> Draft: Upload failed
+    Uploading --> PendingReview: Upload complete
+
+    PendingReview --> Flagged: Auto-moderation detects issue
+    PendingReview --> Approved: Moderator approves
+    PendingReview --> Rejected: Moderator rejects
+
+    Flagged --> PendingReview: Moderator reviews
+    Flagged --> Rejected: Confirmed violation
+
+    Rejected --> [*]: Notify contributor
+    Approved --> Published: Story goes live
+    Published --> Archived: Admin archives
+    Archived --> Published: Admin restores
+    Published --> [*]: User deletes
+```
+
+### 5.6 State Diagram - NFT Campaign Status
+
+```mermaid
+stateDiagram-v2
+    [*] --> Draft: Admin creates campaign
+    Draft --> Scheduled: Set start date (future)
+    Draft --> Active: Activate immediately
+
+    Scheduled --> Active: Start date reached
+    Scheduled --> Cancelled: Admin cancels
+
+    Active --> Paused: Admin pauses
+    Active --> Completed: End date reached
+    Active --> Cancelled: Admin cancels
+
+    Paused --> Active: Admin resumes
+    Paused --> Cancelled: Admin cancels
+
+    Completed --> [*]: Campaign ends
+    Cancelled --> [*]: Campaign cancelled
+
+    note right of Active
+        Users can claim NFTs
+        Visits are tracked
+    end note
+
+    note right of Paused
+        No new claims allowed
+        Existing progress saved
+    end note
 ```
 
 ---
