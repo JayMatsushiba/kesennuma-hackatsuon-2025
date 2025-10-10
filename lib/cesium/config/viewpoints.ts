@@ -15,7 +15,8 @@ export const KESENNUMA_VIEWPOINTS: Viewpoint[] = [
     heading: 0,
     pitch: -85,
     range: 15000,
-    description: 'Complete view of Kesennuma city and bay'
+    description: 'Complete view of Kesennuma city and bay',
+    // No entityId - overview shows entire area
   },
   {
     id: 'port',
@@ -26,7 +27,8 @@ export const KESENNUMA_VIEWPOINTS: Viewpoint[] = [
     heading: 0,
     pitch: -60,
     range: 500,
-    description: 'Main fishing port, heart of Kesennuma fishing industry'
+    description: 'Main fishing port, heart of Kesennuma fishing industry',
+    entityId: 1 // Story: 気仙沼港の朝
   },
   {
     id: 'oshima',
@@ -37,7 +39,8 @@ export const KESENNUMA_VIEWPOINTS: Viewpoint[] = [
     heading: 0,
     pitch: -60,
     range: 1000,
-    description: 'Beautiful island connected by bridge, scenic views'
+    description: 'Beautiful island connected by bridge, scenic views',
+    entityId: 3 // Story: 大島の美しい海岸
   },
   {
     id: 'fish-market',
@@ -48,7 +51,8 @@ export const KESENNUMA_VIEWPOINTS: Viewpoint[] = [
     heading: 45,
     pitch: -55,
     range: 400,
-    description: 'Kesennuma fish market, one of Japan\'s largest'
+    description: 'Kesennuma fish market, one of Japan\'s largest',
+    entityId: 2 // Story: 魚市場の賑わい
   },
   {
     id: 'memorial',
@@ -59,7 +63,8 @@ export const KESENNUMA_VIEWPOINTS: Viewpoint[] = [
     heading: 0,
     pitch: -45,
     range: 300,
-    description: '2011 tsunami memorial and recovery monuments'
+    description: '2011 tsunami memorial and recovery monuments',
+    entityId: 5 // Story: 東日本大震災の記憶
   },
   {
     id: 'bay-north',
@@ -70,7 +75,8 @@ export const KESENNUMA_VIEWPOINTS: Viewpoint[] = [
     heading: 180,
     pitch: -70,
     range: 2000,
-    description: 'Northern bay area with fishing communities'
+    description: 'Northern bay area with fishing communities',
+    entityId: 9 // Story: 気仙沼湾の夕暮れ
   },
   {
     id: 'downtown',
@@ -81,7 +87,8 @@ export const KESENNUMA_VIEWPOINTS: Viewpoint[] = [
     heading: 0,
     pitch: -65,
     range: 800,
-    description: 'Central commercial district and shopping area'
+    description: 'Central commercial district and shopping area',
+    entityId: 6 // Story: 復興への歩み
   },
   {
     id: 'oshima-bridge',
@@ -92,7 +99,8 @@ export const KESENNUMA_VIEWPOINTS: Viewpoint[] = [
     heading: 90,
     pitch: -50,
     range: 600,
-    description: 'Bridge connecting mainland to Oshima Island'
+    description: 'Bridge connecting mainland to Oshima Island',
+    entityId: 4 // Story: 大島大橋
   },
   {
     id: 'shark-museum',
@@ -103,7 +111,8 @@ export const KESENNUMA_VIEWPOINTS: Viewpoint[] = [
     heading: 0,
     pitch: -55,
     range: 350,
-    description: 'Kesennuma Umi no Ichi Shark Museum, Japan\'s only shark museum'
+    description: 'Kesennuma Umi no Ichi Shark Museum, Japan\'s only shark museum',
+    entityId: 11 // Story: シャークミュージアム
   },
   {
     id: 'station',
@@ -114,7 +123,8 @@ export const KESENNUMA_VIEWPOINTS: Viewpoint[] = [
     heading: 0,
     pitch: -60,
     range: 400,
-    description: 'JR East Kesennuma Station, gateway to the city'
+    description: 'JR East Kesennuma Station, gateway to the city',
+    entityId: 12 // Story: 気仙沼駅前
   },
   {
     id: 'pier7',
@@ -125,7 +135,8 @@ export const KESENNUMA_VIEWPOINTS: Viewpoint[] = [
     heading: 180,
     pitch: -55,
     range: 350,
-    description: 'Waterfront community plaza, symbol of recovery and renewal'
+    description: 'Waterfront community plaza, symbol of recovery and renewal',
+    entityId: 13 // Story: Pier7（創/ウマレル）
   }
 ];
 

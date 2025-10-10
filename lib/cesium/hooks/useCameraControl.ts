@@ -49,6 +49,31 @@ export function useCameraControl({ viewer, Cesium }: UseCameraControlOptions): U
         duration: duration ?? CAMERA_CONFIG.defaultFlyDuration,
         offset: headingPitchRange,
         complete: () => {
+          // If this viewpoint has an associated entity, select it to show infoBox
+          if (viewpoint.entityId) {
+            // Search all data sources for the entity
+            let targetEntity = null;
+
+            for (let i = 0; i < viewer.dataSources.length; i++) {
+              const dataSource = viewer.dataSources.get(i);
+              targetEntity = dataSource.entities.getById(String(viewpoint.entityId));
+              if (targetEntity) break;
+            }
+
+            // Also check viewer.entities (non-datasource entities)
+            if (!targetEntity) {
+              targetEntity = viewer.entities.getById(String(viewpoint.entityId));
+            }
+
+            // Select the entity to show its infoBox
+            if (targetEntity) {
+              viewer.selectedEntity = targetEntity;
+            }
+          } else {
+            // No associated entity, clear selection
+            viewer.selectedEntity = undefined;
+          }
+
           viewer.scene.requestRender();
         },
       });

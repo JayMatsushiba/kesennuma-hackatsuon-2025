@@ -105,6 +105,8 @@ export function useStoryMarkers({
 
       if (Cesium.defined(picked) && picked.id && picked.id._kesennumaFeature) {
         const feature = picked.id._kesennumaFeature;
+        const entity = picked.id;
+
         const event: EntityClickEvent = {
           entityId: feature.id,
           title: feature.properties.title,
@@ -119,8 +121,23 @@ export function useStoryMarkers({
         };
         onEntityClick(event);
 
-        // Also set as selected entity (shows built-in info box)
-        viewer.selectedEntity = picked.id;
+        // Fly camera to show the marker with infoBox (like Hiroshima Archive)
+        // Use viewer.flyTo which is simpler than camera.flyTo
+        viewer.flyTo(entity, {
+          duration: 1.5,
+          offset: new Cesium.HeadingPitchRange(
+            0, // heading: 0 (north)
+            Cesium.Math.toRadians(-30), // pitch: look down 30 degrees
+            500 // range: 500m from target
+          ),
+        }).then(() => {
+          // Set as selected entity AFTER camera flight completes
+          // This ensures the infoBox appears in the correct position
+          viewer.selectedEntity = entity;
+
+          // Force render to show infoBox
+          viewer.scene.requestRender();
+        });
       }
     }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 
@@ -139,7 +156,6 @@ export function useStoryMarkers({
     (tag: string) => {
       if (!dataSource || !featureCollection) return;
 
-      const filtered = filterFeaturesByTag(featureCollection, tag);
       const entities = dataSource.entities.values;
 
       entities.forEach((entity: any) => {

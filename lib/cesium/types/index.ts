@@ -50,6 +50,7 @@ export interface Viewpoint {
   pitch: number; // degrees
   range: number; // meters
   description?: string;
+  entityId?: number | string; // Associated marker/story ID to auto-select
 }
 
 // Cesium viewer options
