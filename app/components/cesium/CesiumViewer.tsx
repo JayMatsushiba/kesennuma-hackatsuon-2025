@@ -13,7 +13,8 @@ import { use3DBuildings } from '@/lib/cesium/hooks/use3DBuildings';
 import type { EntityClickEvent } from '@/lib/cesium/types';
 import LoadingOverlay from './LoadingOverlay';
 import ViewpointSelector from './ViewpointSelector';
-import BuildingsControl from './BuildingsControl';
+import LayersPanel, { Layer } from './LayersPanel';
+import { DEFAULT_LAYERS } from '@/lib/cesium/config/layers';
 
 export interface CesiumViewerProps {
   showViewpointSelector?: boolean;
@@ -29,6 +30,7 @@ export default function CesiumViewer({
   className = '',
 }: CesiumViewerProps) {
   const [selectedStory, setSelectedStory] = useState<EntityClickEvent | null>(null);
+  const [layers, setLayers] = useState<Layer[]>(DEFAULT_LAYERS);
 
   // Initialize viewer
   const { viewer, Cesium, isLoading: viewerLoading, error: viewerError, containerRef } = useCesiumViewer({
@@ -37,14 +39,16 @@ export default function CesiumViewer({
   });
 
   // Load story markers
+  const storyMarkersEnabled = layers.find(l => l.id === 'story-markers')?.enabled ?? true;
   const {
     isLoading: markersLoading,
     error: markersError,
     reload: reloadStories,
+    dataSource: storyDataSource,
   } = useStoryMarkers({
     viewer,
     Cesium,
-    enabled: !!viewer,
+    enabled: !!viewer && storyMarkersEnabled,
     onEntityClick: useCallback((event: EntityClickEvent) => {
       setSelectedStory(event);
       onStoryClick?.(event);
@@ -55,15 +59,39 @@ export default function CesiumViewer({
   const { flyToViewpoint, resetView } = useCameraControl({ viewer, Cesium });
 
   // 3D Buildings (OSM - 350M+ buildings worldwide)
+  const buildingsEnabled = layers.find(l => l.id === 'osm-buildings')?.enabled ?? true;
   const {
     isLoading: buildingsLoading,
     toggleOSM,
-    styleBuildings,
+    osmBuildings,
   } = use3DBuildings({
     viewer,
     Cesium,
-    enabled: show3DBuildings,
+    enabled: show3DBuildings && buildingsEnabled,
   });
+
+  // Layer toggle handler
+  const handleToggleLayer = useCallback((layerId: string, enabled: boolean) => {
+    setLayers(prevLayers =>
+      prevLayers.map(layer =>
+        layer.id === layerId ? { ...layer, enabled } : layer
+      )
+    );
+
+    // Handle specific layer toggles
+    if (layerId === 'osm-buildings') {
+      if (osmBuildings) {
+        osmBuildings.show = enabled;
+        viewer?.scene.requestRender();
+      }
+    } else if (layerId === 'story-markers' && storyDataSource) {
+      storyDataSource.show = enabled;
+      viewer?.scene.requestRender();
+    } else if (layerId === 'terrain' && viewer) {
+      viewer.scene.globe.show = enabled;
+      viewer.scene.requestRender();
+    }
+  }, [viewer, storyDataSource, osmBuildings]);
 
   const isLoading = viewerLoading || markersLoading || buildingsLoading;
   const error = viewerError || markersError;
@@ -95,11 +123,11 @@ export default function CesiumViewer({
         <ViewpointSelector onSelectViewpoint={flyToViewpoint} onReset={resetView} />
       )}
 
-      {/* 3D Buildings control */}
-      {show3DBuildings && viewer && (
-        <BuildingsControl
-          onToggleOSM={toggleOSM}
-          onStyleChange={styleBuildings}
+      {/* Layers control panel */}
+      {viewer && (
+        <LayersPanel
+          layers={layers}
+          onToggleLayer={handleToggleLayer}
         />
       )}
 
