@@ -343,15 +343,125 @@ classDiagram
     class Story {
         +Int id
         +String title
-        +String description
+        +String slug
+        +String excerpt
         +Float latitude
         +Float longitude
-        +String mediaUrl
-        +String submitter
-        +String tags
-        +Boolean approved
+        +String coverImageUrl
+        +UUID authorId
+        +String status
+        +Boolean featured
+        +Int viewCount
+        +DateTime publishedAt
         +DateTime createdAt
         +DateTime updatedAt
+        +getContentBlocks()
+        +getMediaGallery()
+        +getTags()
+        +getCameraKeyframe()
+    }
+
+    class StoryContent {
+        +UUID id
+        +Int storyId
+        +String blockType
+        +Int order
+        +JSON data
+        +DateTime createdAt
+        +render()
+    }
+
+    class ContentBlock {
+        <<interface>>
+        +String type
+        +Int order
+        +JSON data
+    }
+
+    class TextBlock {
+        +String content
+        +String format
+        +render()
+    }
+
+    class ImageBlock {
+        +UUID mediaId
+        +String caption
+        +String alt
+        +String layout
+        +render()
+    }
+
+    class VideoBlock {
+        +UUID mediaId
+        +String caption
+        +Boolean autoplay
+        +render()
+    }
+
+    class GalleryBlock {
+        +Array~UUID~ mediaIds
+        +String layout
+        +render()
+    }
+
+    class QuoteBlock {
+        +String text
+        +String author
+        +render()
+    }
+
+    class EmbedBlock {
+        +String embedType
+        +String url
+        +JSON metadata
+        +render()
+    }
+
+    class Model3DBlock {
+        +UUID mediaId
+        +JSON viewerSettings
+        +render()
+    }
+
+    class StoryMedia {
+        +UUID id
+        +Int storyId
+        +String mediaType
+        +String url
+        +String thumbnailUrl
+        +JSON metadata
+        +Int fileSize
+        +Boolean isUsed
+        +DateTime uploadedAt
+        +getUsageCount()
+    }
+
+    class StoryTag {
+        +Int storyId
+        +Int tagId
+    }
+
+    class Tag {
+        +Int id
+        +String name
+        +String slug
+        +String color
+        +String icon
+        +Int storyCount
+    }
+
+    class CameraKeyframe {
+        +UUID id
+        +Int storyId
+        +Float latitude
+        +Float longitude
+        +Float altitude
+        +Float heading
+        +Float pitch
+        +Float roll
+        +String description
+        +Boolean isDefault
     }
 
     class Itinerary {
@@ -367,13 +477,15 @@ classDiagram
         +UUID itineraryId
         +Int storyId
         +Int order
-        +JSON keyframe
+        +UUID keyframeId
     }
 
     class User {
         +UUID id
         +String email
         +String name
+        +String avatar
+        +String bio
         +DateTime createdAt
     }
 
@@ -406,9 +518,32 @@ classDiagram
         +DateTime mintedAt
     }
 
+    Story "1" --> "*" StoryContent : contains
+    StoryContent --> ContentBlock : implements
+    ContentBlock <|-- TextBlock
+    ContentBlock <|-- ImageBlock
+    ContentBlock <|-- VideoBlock
+    ContentBlock <|-- GalleryBlock
+    ContentBlock <|-- QuoteBlock
+    ContentBlock <|-- EmbedBlock
+    ContentBlock <|-- Model3DBlock
+
+    Story "1" --> "*" StoryMedia : hasMedia
+    ImageBlock "*" --> "1" StoryMedia : references
+    VideoBlock "*" --> "1" StoryMedia : references
+    Model3DBlock "*" --> "1" StoryMedia : references
+    GalleryBlock "*" --> "*" StoryMedia : references
+
+    Story "1" --> "*" CameraKeyframe : hasKeyframes
+    Story "*" --> "*" Tag : taggedWith
+    StoryTag "*" --> "1" Story
+    StoryTag "*" --> "1" Tag
+
     Itinerary "1" --> "*" ItineraryStop : contains
     ItineraryStop "*" --> "1" Story : references
-    Story "*" --> "0..1" User : submittedBy
+    ItineraryStop "*" --> "0..1" CameraKeyframe : usesKeyframe
+
+    Story "*" --> "1" User : authoredBy
     NFTCampaign "1" --> "*" Visit : tracks
     NFTCampaign "1" --> "*" NFTStamp : issues
     Visit "*" --> "1" Story : atLocation
