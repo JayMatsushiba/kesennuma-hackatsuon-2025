@@ -1,5 +1,5 @@
 /**
- * Main Cesium 3D viewer component for Kesennuma Digital Experiences
+ * Main Cesium 3D viewer component for Kesmemento
  * Integrates viewer initialization, story markers, and camera controls
  */
 

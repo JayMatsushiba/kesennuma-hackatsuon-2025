@@ -1,22 +1,24 @@
-export default function PlatformExplanation() {
+import { getTranslations } from 'next-intl/server';
+
+export default async function PlatformExplanation() {
+  const t = await getTranslations('platform');
+
   return (
     <section className="py-16 md:py-20 bg-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Main explanation with ample whitespace (余白) */}
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-6">
-            気仙沼デジタル体験とは
+            {t('title')}
           </h2>
           <div className="max-w-3xl mx-auto space-y-6 text-lg leading-relaxed text-slate-700">
             <p>
-              このウェブサイトは、気仙沼に暮らし、育ち、訪れる人々の、
-              <strong className="text-slate-900">かけがえのない物語</strong>を集めたデジタルアーカイブです。
+              {t('intro1')}
+              <strong className="text-slate-900">{t('intro1Bold')}</strong>{t('intro1End')}
             </p>
             <p>
-              単なる観光情報を超えて、この土地と人々の<strong className="text-slate-900">深い繋がり</strong>を伝えることを目指しています。
-              震災の記憶、復興への歩み、日常の喜び、そして未来への希望。
-              それぞれのストーリーは、気仙沼の特定の場所と結びつき、
-              3D地図上で実際にその場所を訪れるように体験できます。
+              {t('intro2')}
+              <strong className="text-slate-900">{t('intro2Bold')}</strong>{t('intro2End')}
             </p>
           </div>
         </div>
@@ -35,10 +37,9 @@ export default function PlatformExplanation() {
                 />
               </svg>
             </div>
-            <h3 className="text-xl font-bold text-slate-900 mb-3">探索する</h3>
+            <h3 className="text-xl font-bold text-slate-900 mb-3">{t('pillar1Title')}</h3>
             <p className="text-slate-600 leading-relaxed">
-              3D地図上で気仙沼の街を自由に探索。
-              それぞれの場所に込められた物語を発見できます。
+              {t('pillar1Desc')}
             </p>
           </div>
 
@@ -54,10 +55,9 @@ export default function PlatformExplanation() {
                 />
               </svg>
             </div>
-            <h3 className="text-xl font-bold text-slate-900 mb-3">共有する</h3>
+            <h3 className="text-xl font-bold text-slate-900 mb-3">{t('pillar2Title')}</h3>
             <p className="text-slate-600 leading-relaxed">
-              あなたの体験や想い出を投稿。
-              写真と文章で、誰でも簡単に物語を残せます。
+              {t('pillar2Desc')}
             </p>
           </div>
 
@@ -73,10 +73,9 @@ export default function PlatformExplanation() {
                 />
               </svg>
             </div>
-            <h3 className="text-xl font-bold text-slate-900 mb-3">繋がる</h3>
+            <h3 className="text-xl font-bold text-slate-900 mb-3">{t('pillar3Title')}</h3>
             <p className="text-slate-600 leading-relaxed">
-              場所を通じて、過去と未来、訪問者と地域が繋がる。
-              新しい気仙沼の魅力を発見できます。
+              {t('pillar3Desc')}
             </p>
           </div>
         </div>
@@ -84,7 +83,7 @@ export default function PlatformExplanation() {
         {/* Trust-building features */}
         <div className="bg-slate-50 rounded-2xl p-8 md:p-12">
           <h3 className="text-2xl font-bold text-slate-900 mb-8 text-center">
-            安心してご利用いただくために
+            {t('trust.title')}
           </h3>
           <div className="grid md:grid-cols-2 gap-6">
             <div className="flex items-start gap-4">
@@ -99,9 +98,9 @@ export default function PlatformExplanation() {
                 </svg>
               </div>
               <div>
-                <h4 className="font-bold text-slate-900 mb-1">コミュニティ主導</h4>
+                <h4 className="font-bold text-slate-900 mb-1">{t('trust.community')}</h4>
                 <p className="text-slate-600 text-sm leading-relaxed">
-                  気仙沼市と地域パートナーと協力し、信頼できる情報を提供しています。
+                  {t('trust.communityDesc')}
                 </p>
               </div>
             </div>
@@ -118,9 +117,9 @@ export default function PlatformExplanation() {
                 </svg>
               </div>
               <div>
-                <h4 className="font-bold text-slate-900 mb-1">個人情報保護</h4>
+                <h4 className="font-bold text-slate-900 mb-1">{t('trust.privacy')}</h4>
                 <p className="text-slate-600 text-sm leading-relaxed">
-                  投稿時の個人情報は厳重に管理。公開範囲を自由に選択できます。
+                  {t('trust.privacyDesc')}
                 </p>
               </div>
             </div>
@@ -137,9 +136,9 @@ export default function PlatformExplanation() {
                 </svg>
               </div>
               <div>
-                <h4 className="font-bold text-slate-900 mb-1">サポート体制</h4>
+                <h4 className="font-bold text-slate-900 mb-1">{t('trust.support')}</h4>
                 <p className="text-slate-600 text-sm leading-relaxed">
-                  使い方のご質問やフィードバックは、お気軽にお問い合わせください。
+                  {t('trust.supportDesc')}
                 </p>
               </div>
             </div>
@@ -156,9 +155,9 @@ export default function PlatformExplanation() {
                 </svg>
               </div>
               <div>
-                <h4 className="font-bold text-slate-900 mb-1">継続的な改善</h4>
+                <h4 className="font-bold text-slate-900 mb-1">{t('trust.improvement')}</h4>
                 <p className="text-slate-600 text-sm leading-relaxed">
-                  皆様のご意見を元に、より使いやすいプラットフォームへ進化し続けます。
+                  {t('trust.improvementDesc')}
                 </p>
               </div>
             </div>

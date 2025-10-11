@@ -1,0 +1,197 @@
+{
+  "common": {
+    "title": "Kesmemento",
+    "subtitle": "3D地図で巡る、みんなの記憶と体験",
+    "submit": "投稿する",
+    "explore": "3D地図を探索する",
+    "viewMap": "3D地図を見る",
+    "language": "言語"
+  },
+  "metadata": {
+    "title": "Kesmemento | 気仙沼の記憶と体験",
+    "description": "3D地図で巡る気仙沼の記憶と体験。震災の記憶、漁業の文化、日常の喜びを共有するプラットフォーム。"
+  },
+  "hero": {
+    "title": "地図で見る",
+    "titleHighlight": "気仙沼の記憶",
+    "subtitle": "震災の記憶、復興の歩み、日常の喜び。",
+    "subtitle2": "この街で暮らす人々の想いを、3D地図でめぐる旅へ。",
+    "exploreButton": "3D地図を探索する",
+    "submitButton": "あなたの体験を投稿"
+  },
+  "features": {
+    "title": "できること",
+    "explore": {
+      "title": "3D地図を見る",
+      "description": "気仙沼の街を3Dで自由に探索。実際の場所と結びついた物語を発見できます。"
+    },
+    "submit": {
+      "title": "投稿する",
+      "description": "あなたの体験を地図に残しましょう。写真と文章で簡単に投稿。"
+    },
+    "themes": {
+      "title": "テーマで探す",
+      "description": "興味のあるテーマから物語を探索できます。",
+      "memorial": "震災の記憶",
+      "fishing": "漁業",
+      "daily": "日常",
+      "food": "食"
+    }
+  },
+  "stats": {
+    "title": "プラットフォームの現状",
+    "stories": "公開ストーリー",
+    "map": "リアルな地図",
+    "access": "いつでもアクセス",
+    "possibilities": "無限の可能性"
+  },
+  "footer": {
+    "description": "気仙沼の人々の物語を、3D地図で探索できるデジタルアーカイブ。過去と未来をつなぐ、新しい体験プラットフォームです。",
+    "links": "リンク",
+    "contact": "お問い合わせ",
+    "copyright": "© 2025 Kesmemento - Built with ❤️ for Kesennuma"
+  },
+  "featuredStories": {
+    "title": "注目のストーリー",
+    "subtitle": "気仙沼に暮らす人々の想い、震災からの復興、そして日常の喜び。この街に刻まれた物語を、実際の場所と共にご覧ください。",
+    "popular": "人気",
+    "viewOnMap": "地図で見る",
+    "viewAll": "すべてのストーリーを見る"
+  },
+  "submit": {
+    "backToMap": "地図に戻る",
+    "title": "体験を投稿する",
+    "subtitle": "気仙沼の思い出や体験を共有しましょう",
+    "successTitle": "送信完了！",
+    "successMessage": "地図に表示されました",
+    "successRedirect": "3D地図に移動します...",
+    "required": "*",
+    "cancel": "キャンセル",
+    "submitButton": "投稿する",
+    "submitting": "送信中...",
+    "uploading": "画像アップロード中...",
+    "basicInfo": {
+      "title": "基本情報",
+      "titleLabel": "タイトル",
+      "titlePlaceholder": "例: 気仙沼港の朝",
+      "descriptionLabel": "説明",
+      "descriptionPlaceholder": "体験や思い出を書いてください...",
+      "coverImageLabel": "カバー画像（任意）",
+      "coverImageHint": "💡 地図上のマーカーとして表示される画像です",
+      "uploadImage": "ファイルを選択",
+      "dragAndDrop": "またはドラッグ＆ドロップ",
+      "imageFormats": "JPG、PNG、WebP（最大10MB）",
+      "orText": "または",
+      "imageUrlPlaceholder": "画像URLを入力（例: https://example.com/image.jpg）"
+    },
+    "location": {
+      "title": "場所",
+      "nameLabel": "場所の名前",
+      "namePlaceholder": "例: 気仙沼港、魚市場、など...",
+      "nameHint": "💡 入力すると既存の場所や住所から検索できます",
+      "searching": "検索中...",
+      "existingLocations": "📍 既存の場所",
+      "newLocations": "🗺️ 新しい場所",
+      "noResults": "場所が見つかりませんでした",
+      "addressLabel": "住所",
+      "addressPlaceholder": "自動入力されます（編集可）",
+      "latitudeLabel": "緯度",
+      "longitudeLabel": "経度",
+      "getCurrentLocation": "📍 現在地を取得"
+    },
+    "categories": {
+      "title": "カテゴリー"
+    },
+    "content": {
+      "title": "詳細（任意）",
+      "addText": "+ テキスト",
+      "addImage": "+ 画像",
+      "textBlock": "📝 テキスト",
+      "imageBlock": "🖼️ 画像",
+      "delete": "削除",
+      "textPlaceholder": "テキストを入力...",
+      "selectImage": "画像を選択",
+      "captionPlaceholder": "キャプション（任意）",
+      "imageUrlPlaceholder": "画像URLを入力"
+    },
+    "errors": {
+      "invalidFile": "画像ファイルを選択してください",
+      "fileTooLarge": "ファイルサイズが大きすぎます（最大10MB）",
+      "invalidFileDrop": "画像ファイルをドロップしてください",
+      "uploadFailed": "アップロードに失敗しました",
+      "imageUploadFailed": "画像のアップロードに失敗しました",
+      "titleRequired": "タイトルを入力してください",
+      "descriptionRequired": "説明を入力してください",
+      "locationRequired": "位置情報を入力してください",
+      "invalidCoordinates": "緯度と経度は数値で入力してください",
+      "coordinatesOutOfRange": "緯度・経度の値が正しくありません",
+      "submitFailed": "送信に失敗しました",
+      "geolocationFailed": "位置情報の取得に失敗しました: ",
+      "geolocationUnsupported": "このブラウザは位置情報をサポートしていません"
+    }
+  },
+  "platform": {
+    "title": "Kesmementoとは",
+    "intro1": "このウェブサイトは、気仙沼に暮らし、育ち、訪れる人々の、",
+    "intro1Bold": "かけがえのない物語",
+    "intro1End": "を集めたデジタルアーカイブです。",
+    "intro2": "単なる観光情報を超えて、この土地と人々の",
+    "intro2Bold": "深い繋がり",
+    "intro2End": "を伝えることを目指しています。震災の記憶、復興への歩み、日常の喜び、そして未来への希望。それぞれのストーリーは、気仙沼の特定の場所と結びつき、3D地図上で実際にその場所を訪れるように体験できます。",
+    "pillar1Title": "探索する",
+    "pillar1Desc": "3D地図上で気仙沼の街を自由に探索。それぞれの場所に込められた物語を発見できます。",
+    "pillar2Title": "共有する",
+    "pillar2Desc": "あなたの体験や想い出を投稿。写真と文章で、誰でも簡単に物語を残せます。",
+    "pillar3Title": "繋がる",
+    "pillar3Desc": "場所を通じて、過去と未来、訪問者と地域が繋がる。新しい気仙沼の魅力を発見できます。",
+    "trust": {
+      "title": "安心してご利用いただくために",
+      "community": "コミュニティ主導",
+      "communityDesc": "気仙沼市と地域パートナーと協力し、信頼できる情報を提供しています。",
+      "privacy": "個人情報保護",
+      "privacyDesc": "投稿時の個人情報は厳重に管理。公開範囲を自由に選択できます。",
+      "support": "サポート体制",
+      "supportDesc": "使い方のご質問やフィードバックは、お気軽にお問い合わせください。",
+      "improvement": "継続的な改善",
+      "improvementDesc": "皆様のご意見を元に、より使いやすいプラットフォームへ進化し続けます。"
+    }
+  },
+  "contact": {
+    "title": "お問い合わせ・フィードバック",
+    "subtitle": "ご意見、ご質問、改善のご提案など、お気軽にお寄せください。皆様の声が、より良いプラットフォームを作ります。",
+    "generalTitle": "一般のお問い合わせ",
+    "generalDesc": "使い方のご質問、掲載内容について、その他全般",
+    "techTitle": "技術的な問題・バグ報告",
+    "techDesc": "システムの不具合、改善案をGitHubで受け付けています",
+    "teamTitle": "開発チーム",
+    "projectInfo": "このプロジェクトは、Kesennuma Hackatsuon 2025で開発されました。気仙沼への愛と、テクノロジーの力で地域を盛り上げたいという想いから生まれたプラットフォームです。",
+    "team": {
+      "lead": "プロジェクトリード",
+      "projectTeam": "プロジェクトチーム",
+      "development": "開発・運営"
+    }
+  },
+  "partners": {
+    "title": "協力団体",
+    "subtitle": "このプラットフォームは、気仙沼市と地域の皆様との協働により実現しています。",
+    "visitWebsite": "ウェブサイトを見る",
+    "partnershipTitle": "パートナーシップについて",
+    "partnershipDesc": "私たちは、気仙沼の魅力を共に発信していただける団体・企業様を募集しています。ご興味のある方は、お気軽にお問い合わせください。",
+    "partnershipCta": "パートナーシップについて問い合わせる",
+    "city": {
+      "name": "気仙沼市",
+      "role": "公式パートナー",
+      "description": "市民の皆様と共に、気仙沼の魅力を世界に発信しています。"
+    },
+    "tourism": {
+      "name": "気仙沼観光コンベンション協会",
+      "role": "コンテンツパートナー",
+      "description": "観光情報と地域の魅力的なスポットを提供しています。"
+    },
+    "community": {
+      "name": "地域コミュニティ",
+      "role": "ストーリーテラー",
+      "description": "気仙沼の日常と記憶を共有してくださる地域の皆様。"
+    }
+  }
+}

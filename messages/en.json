@@ -1,0 +1,198 @@
+{
+  "common": {
+    "title": "Kesmemento",
+    "subtitle": "Explore memories and experiences through 3D maps",
+    "submit": "Submit Your Story",
+    "explore": "Explore 3D Map",
+    "viewMap": "View 3D Map",
+    "language": "Language"
+  },
+  "metadata": {
+    "title": "Kesmemento | Kesennuma Memories & Experiences",
+    "description": "Explore Kesennuma's memories through 3D maps. A platform to share memories of the tsunami, fishing culture, and everyday joy."
+  },
+  "hero": {
+    "title": "Explore Kesennuma",
+    "titleHighlight": "in 3D",
+    "subtitle": "Memories of the tsunami, the journey of recovery, and everyday joy.",
+    "subtitle2": "Embark on a journey through the thoughts of people living in this city via 3D maps.",
+    "exploreButton": "Explore 3D Map",
+    "submitButton": "Share Your Experience"
+  },
+  "features": {
+    "title": "What You Can Do",
+    "explore": {
+      "title": "View 3D Map",
+      "description": "Freely explore Kesennuma in 3D. Discover stories connected to real places."
+    },
+    "submit": {
+      "title": "Submit Stories",
+      "description": "Leave your experience on the map. Easy submission with photos and text."
+    },
+    "themes": {
+      "title": "Explore by Theme",
+      "description": "Explore stories based on topics that interest you.",
+      "memorial": "Tsunami Memorial",
+      "fishing": "Fishing",
+      "daily": "Daily Life",
+      "food": "Food"
+    }
+  },
+  "stats": {
+    "title": "Platform Status",
+    "stories": "Published Stories",
+    "map": "Real 3D Map",
+    "access": "24/7 Access",
+    "possibilities": "Endless Possibilities"
+  },
+  "footer": {
+    "description": "A digital archive where you can explore the stories of Kesennuma's people through 3D maps. A new experience platform connecting past and future.",
+    "links": "Links",
+    "contact": "Contact",
+    "copyright": "© 2025 Kesmemento - Built with ❤️ for Kesennuma"
+  },
+  "featuredStories": {
+    "title": "Featured Stories",
+    "subtitle": "The thoughts of people living in Kesennuma, recovery from the tsunami, and everyday joy. View the stories etched in this city alongside their actual locations.",
+    "note": "Stories are written by local residents in Japanese",
+    "popular": "Popular",
+    "viewOnMap": "View on Map",
+    "viewAll": "View All Stories"
+  },
+  "submit": {
+    "backToMap": "Back to Map",
+    "title": "Submit Your Experience",
+    "subtitle": "Share your memories and experiences of Kesennuma",
+    "successTitle": "Submitted Successfully!",
+    "successMessage": "Your story is now on the map",
+    "successRedirect": "Redirecting to 3D map...",
+    "required": "*",
+    "cancel": "Cancel",
+    "submitButton": "Submit",
+    "submitting": "Submitting...",
+    "uploading": "Uploading image...",
+    "basicInfo": {
+      "title": "Basic Information",
+      "titleLabel": "Title",
+      "titlePlaceholder": "e.g., Morning at Kesennuma Port",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Write about your experience or memory...",
+      "coverImageLabel": "Cover Image (Optional)",
+      "coverImageHint": "💡 This image will be displayed as a marker on the map",
+      "uploadImage": "Choose File",
+      "dragAndDrop": "or drag & drop",
+      "imageFormats": "JPG, PNG, WebP (max 10MB)",
+      "orText": "or",
+      "imageUrlPlaceholder": "Enter image URL (e.g., https://example.com/image.jpg)"
+    },
+    "location": {
+      "title": "Location",
+      "nameLabel": "Location Name",
+      "namePlaceholder": "e.g., Kesennuma Port, Fish Market, etc...",
+      "nameHint": "💡 Type to search existing places or addresses",
+      "searching": "Searching...",
+      "existingLocations": "📍 Existing Places",
+      "newLocations": "🗺️ New Places",
+      "noResults": "No locations found",
+      "addressLabel": "Address",
+      "addressPlaceholder": "Auto-filled (editable)",
+      "latitudeLabel": "Latitude",
+      "longitudeLabel": "Longitude",
+      "getCurrentLocation": "📍 Get Current Location"
+    },
+    "categories": {
+      "title": "Categories"
+    },
+    "content": {
+      "title": "Details (Optional)",
+      "addText": "+ Text",
+      "addImage": "+ Image",
+      "textBlock": "📝 Text",
+      "imageBlock": "🖼️ Image",
+      "delete": "Delete",
+      "textPlaceholder": "Enter text...",
+      "selectImage": "Select Image",
+      "captionPlaceholder": "Caption (optional)",
+      "imageUrlPlaceholder": "Enter image URL"
+    },
+    "errors": {
+      "invalidFile": "Please select an image file",
+      "fileTooLarge": "File size is too large (max 10MB)",
+      "invalidFileDrop": "Please drop an image file",
+      "uploadFailed": "Upload failed",
+      "imageUploadFailed": "Failed to upload image",
+      "titleRequired": "Please enter a title",
+      "descriptionRequired": "Please enter a description",
+      "locationRequired": "Please enter location information",
+      "invalidCoordinates": "Latitude and longitude must be numbers",
+      "coordinatesOutOfRange": "Latitude/longitude values are invalid",
+      "submitFailed": "Failed to submit",
+      "geolocationFailed": "Failed to get location: ",
+      "geolocationUnsupported": "This browser does not support geolocation"
+    }
+  },
+  "platform": {
+    "title": "About Kesmemento",
+    "intro1": "This website is a digital archive collecting the ",
+    "intro1Bold": "irreplaceable stories",
+    "intro1End": " of people who live, grow, and visit Kesennuma.",
+    "intro2": "Beyond simple tourist information, we aim to convey the ",
+    "intro2Bold": "deep connections",
+    "intro2End": " between this land and its people. Memories of the tsunami, the journey of recovery, everyday joys, and hopes for the future. Each story is tied to a specific place in Kesennuma, allowing you to experience that location through a 3D map.",
+    "pillar1Title": "Explore",
+    "pillar1Desc": "Freely explore Kesennuma through 3D maps. Discover the stories embedded in each location.",
+    "pillar2Title": "Share",
+    "pillar2Desc": "Post your experiences and memories. Anyone can easily leave their story with photos and text.",
+    "pillar3Title": "Connect",
+    "pillar3Desc": "Through places, connect past and future, visitors and community. Discover new charms of Kesennuma.",
+    "trust": {
+      "title": "For Your Peace of Mind",
+      "community": "Community-Led",
+      "communityDesc": "We collaborate with Kesennuma City and local partners to provide reliable information.",
+      "privacy": "Privacy Protection",
+      "privacyDesc": "Personal information during submission is strictly managed. You can freely choose your privacy settings.",
+      "support": "Support System",
+      "supportDesc": "Feel free to contact us with questions about usage or feedback.",
+      "improvement": "Continuous Improvement",
+      "improvementDesc": "We continue to evolve into a more user-friendly platform based on your feedback."
+    }
+  },
+  "contact": {
+    "title": "Contact & Feedback",
+    "subtitle": "Feel free to share your opinions, questions, or suggestions for improvement. Your voice helps create a better platform.",
+    "generalTitle": "General Inquiries",
+    "generalDesc": "Questions about usage, content, and general matters",
+    "techTitle": "Technical Issues & Bug Reports",
+    "techDesc": "We accept system issues and improvement suggestions on GitHub",
+    "teamTitle": "Development Team",
+    "projectInfo": "This project was developed at Kesennuma Hackatsuon 2025. A platform born from love for Kesennuma and the desire to energize the region through technology.",
+    "team": {
+      "lead": "Project Lead",
+      "projectTeam": "Project Team",
+      "development": "Development & Operations"
+    }
+  },
+  "partners": {
+    "title": "Partner Organizations",
+    "subtitle": "This platform is realized through collaboration with Kesennuma City and the local community.",
+    "visitWebsite": "Visit Website",
+    "partnershipTitle": "About Partnerships",
+    "partnershipDesc": "We are looking for organizations and companies to help promote the appeal of Kesennuma together. If you are interested, please feel free to contact us.",
+    "partnershipCta": "Inquire about partnerships",
+    "city": {
+      "name": "Kesennuma City",
+      "role": "Official Partner",
+      "description": "Working with citizens to promote Kesennuma's appeal to the world."
+    },
+    "tourism": {
+      "name": "Kesennuma Tourism Convention Association",
+      "role": "Content Partner",
+      "description": "Providing tourism information and highlighting attractive local spots."
+    },
+    "community": {
+      "name": "Local Community",
+      "role": "Storytellers",
+      "description": "Local residents who share daily life and memories of Kesennuma."
+    }
+  }
+}

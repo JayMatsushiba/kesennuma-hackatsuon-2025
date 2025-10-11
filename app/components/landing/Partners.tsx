@@ -1,31 +1,33 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
+import { getTranslations } from 'next-intl/server';
 
-export default function Partners() {
+export default async function Partners() {
+  const t = await getTranslations('partners');
   const partners = [
     {
-      name: '気仙沼市',
-      role: '公式パートナー',
-      description: '市民の皆様と共に、気仙沼の魅力を世界に発信しています。',
+      name: t('city.name'),
+      role: t('city.role'),
+      description: t('city.description'),
       logo: '/partners/kesennuma-city-emblem.svg',
-      logoAlt: '気仙沼市章',
+      logoAlt: t('city.name'),
       website: 'https://www.kesennuma.miyagi.jp/',
     },
     {
-      name: '気仙沼観光コンベンション協会',
-      role: 'コンテンツパートナー',
-      description: '観光情報と地域の魅力的なスポットを提供しています。',
+      name: t('tourism.name'),
+      role: t('tourism.role'),
+      description: t('tourism.description'),
       logo: '/partners/kesennuma-tourism-logo.svg',
-      logoAlt: '気仙沼観光コンベンション協会ロゴ',
+      logoAlt: t('tourism.name'),
       website: 'https://kesennuma-kanko.jp/',
     },
     {
-      name: '地域コミュニティ',
-      role: 'ストーリーテラー',
-      description: '気仙沼の日常と記憶を共有してくださる地域の皆様。',
-      logo: '👥', // Keep emoji for community
-      logoAlt: 'コミュニティアイコン',
+      name: t('community.name'),
+      role: t('community.role'),
+      description: t('community.description'),
+      logo: '👥',
+      logoAlt: t('community.name'),
     },
   ];
 
@@ -34,10 +36,10 @@ export default function Partners() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-            協力団体
+            {t('title')}
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            このプラットフォームは、気仙沼市と地域の皆様との協働により実現しています。
+            {t('subtitle')}
           </p>
         </div>
 
@@ -73,7 +75,7 @@ export default function Partners() {
                   </CardDescription>
                   {partner.website && (
                     <div className="mt-3 text-xs text-brand-600 hover:text-brand-700 font-medium flex items-center justify-center gap-1">
-                      ウェブサイトを見る
+                      {t('visitWebsite')}
                       <svg
                         className="w-3 h-3"
                         fill="none"
@@ -119,10 +121,9 @@ export default function Partners() {
         {/* Partnership call to action */}
         <Card className="mt-12 text-center">
           <CardHeader>
-            <CardTitle className="text-xl">パートナーシップについて</CardTitle>
+            <CardTitle className="text-xl">{t('partnershipTitle')}</CardTitle>
             <CardDescription className="max-w-2xl mx-auto">
-              私たちは、気仙沼の魅力を共に発信していただける団体・企業様を募集しています。
-              ご興味のある方は、お気軽にお問い合わせください。
+              {t('partnershipDesc')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -130,7 +131,7 @@ export default function Partners() {
               href="mailto:partners@kesennuma-digital.jp"
               className="inline-flex items-center text-brand-600 hover:text-brand-700 font-medium"
             >
-              パートナーシップについて問い合わせる
+              {t('partnershipCta')}
               <svg
                 className="w-4 h-4 ml-2"
                 fill="none"

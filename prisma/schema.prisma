@@ -1,4 +1,4 @@
-// Prisma schema for Kesennuma Digital Experiences
+// Prisma schema for Kesmemento
 // Using SQLite (Local development)
 
 generator client {

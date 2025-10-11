@@ -2,6 +2,8 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { useParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
@@ -20,6 +22,10 @@ interface FeaturedStoriesProps {
 }
 
 export default function FeaturedStories({ stories }: FeaturedStoriesProps) {
+  const t = useTranslations('featuredStories');
+  const params = useParams();
+  const locale = params.locale as string;
+
   if (stories.length === 0) {
     return null;
   }
@@ -30,12 +36,16 @@ export default function FeaturedStories({ stories }: FeaturedStoriesProps) {
         {/* Section header with Japanese aesthetic */}
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-            注目のストーリー
+            {t('title')}
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            気仙沼に暮らす人々の想い、震災からの復興、そして日常の喜び。<br />
-            この街に刻まれた物語を、実際の場所と共にご覧ください。
+            {t('subtitle')}
           </p>
+          {locale === 'en' && (
+            <p className="text-sm text-slate-500 mt-2 italic">
+              {t('note')}
+            </p>
+          )}
         </div>
 
         {/* Featured stories grid */}
@@ -43,7 +53,7 @@ export default function FeaturedStories({ stories }: FeaturedStoriesProps) {
           {stories.slice(0, 3).map((story, index) => (
             <Link
               key={story.id}
-              href={`/test-cesium?story=${story.slug}`}
+              href={`/${locale}/test-cesium?story=${story.slug}`}
               className="group block"
             >
               <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 border-slate-200 h-full"
@@ -80,7 +90,7 @@ export default function FeaturedStories({ stories }: FeaturedStoriesProps) {
                     {index === 0 && '🥇'}
                     {index === 1 && '🥈'}
                     {index === 2 && '🥉'}
-                    <span className="ml-1">人気</span>
+                    <span className="ml-1">{t('popular')}</span>
                   </Badge>
                 </div>
 
@@ -140,7 +150,7 @@ export default function FeaturedStories({ stories }: FeaturedStoriesProps) {
 
                   {/* Read more link */}
                   <div className="flex items-center text-brand-600 font-medium text-sm group-hover:translate-x-1 transition-transform">
-                    地図で見る
+                    {t('viewOnMap')}
                     <svg
                       className="w-4 h-4 ml-1"
                       fill="none"
@@ -164,10 +174,10 @@ export default function FeaturedStories({ stories }: FeaturedStoriesProps) {
         {/* View all link */}
         <div className="text-center mt-10">
           <Link
-            href="/test-cesium"
+            href={`/${locale}/test-cesium`}
             className="inline-flex items-center text-brand-600 hover:text-brand-700 font-medium text-lg group"
           >
-            すべてのストーリーを見る
+            {t('viewAll')}
             <svg
               className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform"
               fill="none"

@@ -1,4 +1,4 @@
--- Kesennuma Digital Experiences - Initial Schema Migration
+-- Kesmemento - Initial Schema Migration
 -- Enable required extensions
 
 -- Enable UUID extension

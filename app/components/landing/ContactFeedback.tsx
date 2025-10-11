@@ -1,17 +1,20 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { getTranslations } from 'next-intl/server';
 
-export default function ContactFeedback() {
+export default async function ContactFeedback() {
+  const t = await getTranslations('contact');
+
   const team = [
     {
       name: 'Jay Matsushiba',
-      role: 'プロジェクトリード',
+      role: t('team.lead'),
       link: 'https://github.com/JayMatsushiba',
       icon: 'github',
     },
     {
-      name: 'プロジェクトチーム',
-      role: '開発・運営',
+      name: t('team.projectTeam'),
+      role: t('team.development'),
       link: 'mailto:contact@kesennuma-digital.jp',
       icon: 'email',
     },
@@ -22,11 +25,10 @@ export default function ContactFeedback() {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-            お問い合わせ・フィードバック
+            {t('title')}
           </h2>
           <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-            ご意見、ご質問、改善のご提案など、お気軽にお寄せください。<br />
-            皆様の声が、より良いプラットフォームを作ります。
+            {t('subtitle')}
           </p>
         </div>
 
@@ -51,9 +53,9 @@ export default function ContactFeedback() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-900 mb-1 text-lg">一般のお問い合わせ</h3>
+                  <h3 className="font-bold text-slate-900 mb-1 text-lg">{t('generalTitle')}</h3>
                   <p className="text-muted-foreground text-sm mb-2">
-                    使い方のご質問、掲載内容について、その他全般
+                    {t('generalDesc')}
                   </p>
                   <p className="text-brand-600 font-medium text-sm">
                     contact@kesennuma-digital.jp
@@ -82,9 +84,9 @@ export default function ContactFeedback() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-900 mb-1 text-lg">技術的な問題・バグ報告</h3>
+                  <h3 className="font-bold text-slate-900 mb-1 text-lg">{t('techTitle')}</h3>
                   <p className="text-muted-foreground text-sm mb-2">
-                    システムの不具合、改善案をGitHubで受け付けています
+                    {t('techDesc')}
                   </p>
                   <p className="text-slate-700 font-medium text-sm flex items-center">
                     GitHub Issues
@@ -106,7 +108,7 @@ export default function ContactFeedback() {
         {/* Team info */}
         <Card className="bg-gradient-to-br from-slate-50 to-slate-100">
           <CardHeader className="pb-4">
-            <CardTitle className="text-xl text-center">開発チーム</CardTitle>
+            <CardTitle className="text-xl text-center">{t('teamTitle')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="flex flex-wrap justify-center gap-6">
@@ -148,8 +150,7 @@ export default function ContactFeedback() {
 
             <div className="pt-6 border-t border-slate-300 text-center">
               <p className="text-sm text-muted-foreground leading-relaxed">
-                このプロジェクトは、<strong>Kesennuma Hackatsuon 2025</strong>で開発されました。<br />
-                気仙沼への愛と、テクノロジーの力で地域を盛り上げたいという想いから生まれたプラットフォームです。
+                {t('projectInfo')}
               </p>
             </div>
           </CardContent>

@@ -1,7 +1,10 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import Link from 'next/link';
+import LanguageSwitcher from '@/app/components/LanguageSwitcher';
 
 type ContentBlock = {
   type: 'text' | 'image';
@@ -33,7 +36,11 @@ type GeocodeResult = {
 };
 
 export default function SubmitPage() {
+  const t = useTranslations('submit');
+  const tCommon = useTranslations('common');
   const router = useRouter();
+  const params = useParams();
+  const locale = params.locale as string;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -186,11 +193,11 @@ export default function SubmitPage() {
           setLongitude(position.coords.longitude.toString());
         },
         (error) => {
-          setError('位置情報の取得に失敗しました: ' + error.message);
+          setError(t('errors.geolocationFailed') + error.message);
         }
       );
     } else {
-      setError('このブラウザは位置情報をサポートしていません');
+      setError(t('errors.geolocationUnsupported'));
     }
   };
 
@@ -228,13 +235,13 @@ export default function SubmitPage() {
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      setError('画像ファイルを選択してください');
+      setError(t('errors.invalidFile'));
       return;
     }
 
     // Validate file size (10MB)
     if (file.size > 10 * 1024 * 1024) {
-      setError('ファイルサイズが大きすぎます（最大10MB）');
+      setError(t('errors.fileTooLarge'));
       return;
     }
 
@@ -264,7 +271,7 @@ export default function SubmitPage() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'アップロードに失敗しました');
+        throw new Error(errorData.error || t('errors.uploadFailed'));
       }
 
       const data = await response.json();
@@ -300,13 +307,13 @@ export default function SubmitPage() {
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      setError('画像ファイルをドロップしてください');
+      setError(t('errors.invalidFileDrop'));
       return;
     }
 
     // Validate file size (10MB)
     if (file.size > 10 * 1024 * 1024) {
-      setError('ファイルサイズが大きすぎます（最大10MB）');
+      setError(t('errors.fileTooLarge'));
       return;
     }
 
@@ -327,13 +334,13 @@ export default function SubmitPage() {
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      setError('画像ファイルを選択してください');
+      setError(t('errors.invalidFile'));
       return;
     }
 
     // Validate file size (10MB)
     if (file.size > 10 * 1024 * 1024) {
-      setError('ファイルサイズが大きすぎます（最大10MB）');
+      setError(t('errors.fileTooLarge'));
       return;
     }
 
@@ -384,7 +391,7 @@ export default function SubmitPage() {
             });
 
             if (!response.ok) {
-              throw new Error('画像のアップロードに失敗しました');
+              throw new Error(t('errors.imageUploadFailed'));
             }
 
             const data = await response.json();
@@ -406,24 +413,24 @@ export default function SubmitPage() {
 
       // Validation
       if (!title.trim()) {
-        throw new Error('タイトルを入力してください');
+        throw new Error(t('errors.titleRequired'));
       }
       if (!excerpt.trim()) {
-        throw new Error('説明を入力してください');
+        throw new Error(t('errors.descriptionRequired'));
       }
       if (!latitude || !longitude) {
-        throw new Error('位置情報を入力してください');
+        throw new Error(t('errors.locationRequired'));
       }
 
       const lat = parseFloat(latitude);
       const lng = parseFloat(longitude);
 
       if (isNaN(lat) || isNaN(lng)) {
-        throw new Error('緯度と経度は数値で入力してください');
+        throw new Error(t('errors.invalidCoordinates'));
       }
 
       if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
-        throw new Error('緯度・経度の値が正しくありません');
+        throw new Error(t('errors.coordinatesOutOfRange'));
       }
 
       // Filter out empty content blocks (use processedContentBlocks with uploaded URLs)
@@ -463,17 +470,17 @@ export default function SubmitPage() {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || result.details || '送信に失敗しました');
+        throw new Error(result.error || result.details || t('errors.submitFailed'));
       }
 
       setSuccess(true);
 
       // Redirect to map and force reload to show new story
       setTimeout(() => {
-        window.location.href = '/test-cesium';
+        window.location.href = `/${locale}/test-cesium`;
       }, 2000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : '送信に失敗しました');
+      setError(err instanceof Error ? err.message : t('errors.submitFailed'));
     } finally {
       setIsSubmitting(false);
     }
@@ -484,28 +491,45 @@ export default function SubmitPage() {
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="bg-white p-8 rounded-2xl shadow-lg max-w-md text-center">
           <div className="text-6xl mb-4">✅</div>
-          <h2 className="text-2xl font-bold text-slate-900 mb-2">送信完了！</h2>
-          <p className="text-slate-600 mb-4">地図に表示されました</p>
-          <p className="text-sm text-slate-500">3D地図に移動します...</p>
+          <h2 className="text-2xl font-bold text-slate-900 mb-2">{t('successTitle')}</h2>
+          <p className="text-slate-600 mb-4">{t('successMessage')}</p>
+          <p className="text-sm text-slate-500">{t('successRedirect')}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 py-8">
-      <div className="max-w-3xl mx-auto px-4">
-        {/* Header */}
+    <div className="min-h-screen bg-slate-50">
+      {/* Sticky Header - Same as home page */}
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-50 backdrop-blur-sm bg-white/95">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between gap-4">
+            <Link href={`/${locale}`} className="flex-1 no-underline">
+              <h1 className="text-xl md:text-3xl font-bold text-slate-900 hover:text-brand-600 transition-colors">
+                {tCommon('title')}
+              </h1>
+              <p className="text-xs md:text-base text-slate-600 mt-1">
+                {tCommon('subtitle')}
+              </p>
+            </Link>
+            <LanguageSwitcher />
+          </div>
+        </div>
+      </header>
+
+      <div className="max-w-3xl mx-auto px-4 py-8">
+        {/* Page Header */}
         <div className="mb-8">
           <button
-            onClick={() => router.push('/')}
+            onClick={() => router.push(`/${locale}`)}
             className="text-blue-600 hover:text-blue-700 mb-4 flex items-center gap-2"
           >
-            ← 地図に戻る
+            ← {t('backToMap')}
           </button>
-          <h1 className="text-3xl font-bold text-slate-900">体験を投稿する</h1>
+          <h1 className="text-3xl font-bold text-slate-900">{t('title')}</h1>
           <p className="text-slate-600 mt-2">
-            気仙沼の思い出や体験を共有しましょう
+            {t('subtitle')}
           </p>
         </div>
 
@@ -520,33 +544,33 @@ export default function SubmitPage() {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Story Information */}
           <div className="bg-white rounded-xl shadow-sm p-6">
-            <h2 className="text-xl font-bold text-slate-900 mb-4">基本情報</h2>
+            <h2 className="text-xl font-bold text-slate-900 mb-4">{t('basicInfo.title')}</h2>
 
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  タイトル <span className="text-red-500">*</span>
+                  {t('basicInfo.titleLabel')} <span className="text-red-500">{t('required')}</span>
                 </label>
                 <input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="例: 気仙沼港の朝"
+                  placeholder={t('basicInfo.titlePlaceholder')}
                   required
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  説明 <span className="text-red-500">*</span>
+                  {t('basicInfo.descriptionLabel')} <span className="text-red-500">{t('required')}</span>
                 </label>
                 <textarea
                   value={excerpt}
                   onChange={(e) => setExcerpt(e.target.value)}
                   rows={4}
                   className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="体験や思い出を書いてください..."
+                  placeholder={t('basicInfo.descriptionPlaceholder')}
                   required
                 />
               </div>
@@ -554,10 +578,10 @@ export default function SubmitPage() {
               {/* Cover Image Upload */}
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  カバー画像（任意）
+                  {t('basicInfo.coverImageLabel')}
                 </label>
                 <p className="text-xs text-slate-500 mb-3">
-                  💡 地図上のマーカーとして表示される画像です
+                  {t('basicInfo.coverImageHint')}
                 </p>
 
                 {/* Image Preview */}
@@ -600,11 +624,11 @@ export default function SubmitPage() {
                           <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                         <p className="mt-2 text-sm text-slate-600">
-                          <span className="font-medium text-blue-600 hover:text-blue-500">ファイルを選択</span>
-                          {' '}またはドラッグ＆ドロップ
+                          <span className="font-medium text-blue-600 hover:text-blue-500">{t('basicInfo.uploadImage')}</span>
+                          {' '}{t('basicInfo.dragAndDrop')}
                         </p>
                         <p className="text-xs text-slate-500 mt-1">
-                          JPG、PNG、WebP（最大10MB）
+                          {t('basicInfo.imageFormats')}
                         </p>
                       </div>
                     </label>
@@ -615,7 +639,7 @@ export default function SubmitPage() {
                         <div className="w-full border-t border-slate-300"></div>
                       </div>
                       <div className="relative flex justify-center text-xs">
-                        <span className="bg-white px-2 text-slate-500">または</span>
+                        <span className="bg-white px-2 text-slate-500">{t('basicInfo.orText')}</span>
                       </div>
                     </div>
 
@@ -624,7 +648,7 @@ export default function SubmitPage() {
                       value={coverImageUrl}
                       onChange={(e) => setCoverImageUrl(e.target.value)}
                       className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="画像URLを入力（例: https://example.com/image.jpg）"
+                      placeholder={t('basicInfo.imageUrlPlaceholder')}
                       disabled={!!uploadedImageFile}
                     />
                   </div>
@@ -635,13 +659,13 @@ export default function SubmitPage() {
 
           {/* Location */}
           <div className="bg-white rounded-xl shadow-sm p-6">
-            <h2 className="text-xl font-bold text-slate-900 mb-4">場所</h2>
+            <h2 className="text-xl font-bold text-slate-900 mb-4">{t('location.title')}</h2>
 
             <div className="space-y-4">
               {/* Location Search with Autocomplete */}
               <div className="relative" ref={dropdownRef}>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  場所の名前 <span className="text-red-500">*</span>
+                  {t('location.nameLabel')} <span className="text-red-500">{t('required')}</span>
                 </label>
                 <input
                   type="text"
@@ -653,11 +677,11 @@ export default function SubmitPage() {
                     }
                   }}
                   className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="例: 気仙沼港、魚市場、など..."
+                  placeholder={t('location.namePlaceholder')}
                   required
                 />
                 <p className="text-xs text-slate-500 mt-1">
-                  💡 入力すると既存の場所や住所から検索できます
+                  {t('location.nameHint')}
                 </p>
 
                 {/* Search Dropdown */}
@@ -665,7 +689,7 @@ export default function SubmitPage() {
                   <div className="absolute z-50 w-full mt-1 bg-white border border-slate-300 rounded-lg shadow-xl max-h-96 overflow-y-auto">
                     {isSearching && (
                       <div className="p-4 text-center text-slate-500">
-                        検索中...
+                        {t('location.searching')}
                       </div>
                     )}
 
@@ -673,7 +697,7 @@ export default function SubmitPage() {
                     {locationSearchResults.length > 0 && (
                       <div>
                         <div className="px-4 py-2 bg-blue-50 text-xs font-bold text-blue-900 uppercase sticky top-0">
-                          📍 既存の場所 ({locationSearchResults.length})
+                          {t('location.existingLocations')} ({locationSearchResults.length})
                         </div>
                         {locationSearchResults.map((loc) => (
                           <button
@@ -698,7 +722,7 @@ export default function SubmitPage() {
                     {geocodeResults.length > 0 && (
                       <div>
                         <div className="px-4 py-2 bg-green-50 text-xs font-bold text-green-900 uppercase sticky top-0">
-                          🗺️ 新しい場所 ({geocodeResults.length})
+                          {t('location.newLocations')} ({geocodeResults.length})
                         </div>
                         {geocodeResults.map((result, idx) => (
                           <button
@@ -719,7 +743,7 @@ export default function SubmitPage() {
 
                     {!isSearching && locationSearchResults.length === 0 && geocodeResults.length === 0 && (
                       <div className="p-4 text-center text-slate-500 text-sm">
-                        場所が見つかりませんでした
+                        {t('location.noResults')}
                       </div>
                     )}
                   </div>
@@ -729,14 +753,14 @@ export default function SubmitPage() {
               {/* Address (optional, auto-filled) */}
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  住所
+                  {t('location.addressLabel')}
                 </label>
                 <input
                   type="text"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="自動入力されます（編集可）"
+                  placeholder={t('location.addressPlaceholder')}
                 />
               </div>
 
@@ -744,7 +768,7 @@ export default function SubmitPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">
-                    緯度 <span className="text-red-500">*</span>
+                    {t('location.latitudeLabel')} <span className="text-red-500">{t('required')}</span>
                   </label>
                   <input
                     type="text"
@@ -757,7 +781,7 @@ export default function SubmitPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">
-                    経度 <span className="text-red-500">*</span>
+                    {t('location.longitudeLabel')} <span className="text-red-500">{t('required')}</span>
                   </label>
                   <input
                     type="text"
@@ -777,7 +801,7 @@ export default function SubmitPage() {
                   onClick={handleGetCurrentLocation}
                   className="text-blue-600 hover:text-blue-700 font-medium"
                 >
-                  📍 現在地を取得
+                  {t('location.getCurrentLocation')}
                 </button>
               </div>
             </div>
@@ -785,7 +809,7 @@ export default function SubmitPage() {
 
           {/* Tags */}
           <div className="bg-white rounded-xl shadow-sm p-6">
-            <h2 className="text-xl font-bold text-slate-900 mb-4">カテゴリー</h2>
+            <h2 className="text-xl font-bold text-slate-900 mb-4">{t('categories.title')}</h2>
             <div className="flex flex-wrap gap-2">
               {availableTags.map((tag) => (
                 <button
@@ -812,21 +836,21 @@ export default function SubmitPage() {
           {/* Content Blocks */}
           <div className="bg-white rounded-xl shadow-sm p-6">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-slate-900">詳細（任意）</h2>
+              <h2 className="text-xl font-bold text-slate-900">{t('content.title')}</h2>
               <div className="flex gap-2">
                 <button
                   type="button"
                   onClick={() => addContentBlock('text')}
                   className="text-sm px-3 py-1 bg-slate-100 hover:bg-slate-200 rounded-lg"
                 >
-                  + テキスト
+                  {t('content.addText')}
                 </button>
                 <button
                   type="button"
                   onClick={() => addContentBlock('image')}
                   className="text-sm px-3 py-1 bg-slate-100 hover:bg-slate-200 rounded-lg"
                 >
-                  + 画像
+                  {t('content.addImage')}
                 </button>
               </div>
             </div>
@@ -836,7 +860,7 @@ export default function SubmitPage() {
                 <div key={index} className="border border-slate-200 rounded-lg p-4">
                   <div className="flex justify-between items-center mb-3">
                     <span className="text-sm font-medium text-slate-600">
-                      {block.type === 'text' ? '📝 テキスト' : '🖼️ 画像'} #{index + 1}
+                      {block.type === 'text' ? t('content.textBlock') : t('content.imageBlock')} #{index + 1}
                     </span>
                     {contentBlocks.length > 1 && (
                       <button
@@ -844,7 +868,7 @@ export default function SubmitPage() {
                         onClick={() => removeContentBlock(index)}
                         className="text-red-600 hover:text-red-700 text-sm"
                       >
-                        削除
+                        {t('content.delete')}
                       </button>
                     )}
                   </div>
@@ -857,7 +881,7 @@ export default function SubmitPage() {
                       }
                       rows={3}
                       className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="テキストを入力..."
+                      placeholder={t('content.textPlaceholder')}
                     />
                   )}
 
@@ -898,9 +922,9 @@ export default function SubmitPage() {
                                 <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
                               </svg>
                               <p className="mt-1 text-xs text-slate-600">
-                                <span className="font-medium text-blue-600 hover:text-blue-500">画像を選択</span>
+                                <span className="font-medium text-blue-600 hover:text-blue-500">{t('content.selectImage')}</span>
                               </p>
-                              <p className="text-xs text-slate-500 mt-1">JPG, PNG, WebP（最大10MB）</p>
+                              <p className="text-xs text-slate-500 mt-1">{t('basicInfo.imageFormats')}</p>
                             </div>
                           </label>
 
@@ -921,7 +945,7 @@ export default function SubmitPage() {
                               updateContentBlock(index, { imageUrl: e.target.value })
                             }
                             className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="画像URLを入力"
+                            placeholder={t('content.imageUrlPlaceholder')}
                             disabled={!!block.data.imageFile}
                           />
                         </div>
@@ -935,7 +959,7 @@ export default function SubmitPage() {
                           updateContentBlock(index, { caption: e.target.value })
                         }
                         className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="キャプション（任意）"
+                        placeholder={t('content.captionPlaceholder')}
                       />
                     </div>
                   )}
@@ -948,17 +972,17 @@ export default function SubmitPage() {
           <div className="flex gap-4">
             <button
               type="button"
-              onClick={() => router.push('/')}
+              onClick={() => router.push(`/${locale}`)}
               className="px-6 py-3 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50"
             >
-              キャンセル
+              {t('cancel')}
             </button>
             <button
               type="submit"
               disabled={isSubmitting || uploading}
               className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed font-medium"
             >
-              {uploading ? '画像アップロード中...' : isSubmitting ? '送信中...' : '投稿する'}
+              {uploading ? t('uploading') : isSubmitting ? t('submitting') : t('submitButton')}
             </button>
           </div>
         </form>

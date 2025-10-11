@@ -1,5 +1,5 @@
 /**
- * Cesium TypeScript definitions for Kesennuma Digital Experiences
+ * Cesium TypeScript definitions for Kesmemento
  */
 
 // Core Story type (matches Supabase schema)
