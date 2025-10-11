@@ -62,14 +62,50 @@ export function useStoryMarkers({
 
       setFeatureCollection(data);
 
+      // Deduplicate features by location coordinates
+      // Group stories by location (lat/lng rounded to 5 decimals ~1m precision)
+      const locationMap = new Map<string, typeof data.features>();
+
+      data.features.forEach(feature => {
+        const lat = feature.geometry.coordinates[1].toFixed(5);
+        const lng = feature.geometry.coordinates[0].toFixed(5);
+        const key = `${lat},${lng}`;
+
+        if (!locationMap.has(key)) {
+          locationMap.set(key, []);
+        }
+        locationMap.get(key)!.push(feature);
+      });
+
+      // Create deduplicated GeoJSON with one feature per location
+      const deduplicatedFeatures = Array.from(locationMap.values()).map(featuresAtLocation => {
+        // Use the first feature as the representative
+        const primaryFeature = featuresAtLocation[0];
+
+        // Attach all features at this location for later retrieval
+        return {
+          ...primaryFeature,
+          properties: {
+            ...primaryFeature.properties,
+            _allStoriesAtLocation: featuresAtLocation, // Store all stories here
+            _storyCount: featuresAtLocation.length,
+          },
+        };
+      });
+
+      const deduplicatedData = {
+        ...data,
+        features: deduplicatedFeatures,
+      };
+
       // Load into Cesium (only set markerSize, not markerColor - we'll set images/colors in customizeDataSourceEntities)
-      const ds = await Cesium.GeoJsonDataSource.load(data, {
+      const ds = await Cesium.GeoJsonDataSource.load(deduplicatedData, {
         clampToGround: true,
         markerSize: MARKER_DEFAULTS.size, // Basic size, we'll customize color/image after
       });
 
       // Customize entities (styling, descriptions, images) with Japanese aesthetic
-      await customizeDataSourceEntities(ds, Cesium, data.features);
+      await customizeDataSourceEntities(ds, Cesium, deduplicatedFeatures);
 
       // Enable clustering if needed
       if (CLUSTERING_CONFIG.enabled) {

@@ -45,6 +45,7 @@ export interface StorySidebarProps {
   stories: Story[];
   selectedStoryId: string | null;
   onStorySelect: (storyId: string) => void;
+  locationName?: string;
   onClose: () => void;
   className?: string;
 }
@@ -53,6 +54,7 @@ export default function StorySidebar({
   stories,
   selectedStoryId,
   onStorySelect,
+  locationName,
   onClose,
   className = '',
 }: StorySidebarProps) {
@@ -169,19 +171,32 @@ export default function StorySidebar({
     >
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-slate-200 bg-white">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-1 min-w-0">
           {showingDetail && (
             <button
               onClick={handleBack}
-              className="p-1 hover:bg-slate-100 rounded transition-colors"
+              className="p-1 hover:bg-slate-100 rounded transition-colors flex-shrink-0"
               aria-label="戻る"
             >
               <ChevronLeftIcon className="w-5 h-5 text-slate-700" />
             </button>
           )}
-          <h2 className="text-lg font-bold text-slate-900">
-            {showingDetail ? selectedStory.title : 'ストーリー'}
-          </h2>
+          <div className="flex-1 min-w-0">
+            {showingDetail ? (
+              <h2 className="text-lg font-bold text-slate-900 truncate">
+                {selectedStory.title}
+              </h2>
+            ) : (
+              <>
+                <h2 className="text-lg font-bold text-slate-900 truncate">
+                  {locationName || 'この場所'}
+                </h2>
+                <p className="text-sm text-slate-600">
+                  {stories.length}件のストーリー
+                </p>
+              </>
+            )}
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <button

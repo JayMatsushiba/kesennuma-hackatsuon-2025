@@ -16,12 +16,53 @@ export interface ViewpointSelectorProps {
 export default function ViewpointSelector({ onSelectViewpoint, onReset }: ViewpointSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [stories, setStories] = useState<StoryFeatureCollection | null>(null);
+  const [uniqueLocations, setUniqueLocations] = useState<Array<{
+    key: string;
+    name: string;
+    storyCount: number;
+    representativeId: number | string;
+  }>>([]);
 
   // Load stories from API
   useEffect(() => {
     fetch('/api/stories')
       .then(res => res.json())
-      .then(data => setStories(data))
+      .then(data => {
+        setStories(data);
+
+        // Deduplicate by location (same logic as useStoryMarkers)
+        if (data?.features) {
+          const locationMap = new Map<string, typeof data.features>();
+
+          data.features.forEach((feature: any) => {
+            const lat = feature.geometry.coordinates[1].toFixed(5);
+            const lng = feature.geometry.coordinates[0].toFixed(5);
+            const key = `${lat},${lng}`;
+
+            if (!locationMap.has(key)) {
+              locationMap.set(key, []);
+            }
+            locationMap.get(key)!.push(feature);
+          });
+
+          // Create unique locations list
+          const locations = Array.from(locationMap.entries()).map(([key, features]) => {
+            const primaryFeature = features[0];
+            const locationName = primaryFeature.properties.locationName ||
+                                primaryFeature.properties.title?.split(' - ')[0] ||
+                                '名称未設定';
+
+            return {
+              key,
+              name: locationName,
+              storyCount: features.length,
+              representativeId: primaryFeature.id,
+            };
+          });
+
+          setUniqueLocations(locations);
+        }
+      })
       .catch(err => console.error('Failed to load stories:', err));
   }, []);
 
@@ -54,27 +95,25 @@ export default function ViewpointSelector({ onSelectViewpoint, onReset }: Viewpo
 
           {/* Menu */}
           <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-slate-200 py-2 z-10 max-h-[600px] overflow-y-auto">
-            {/* User Stories */}
+            {/* Unique Locations */}
             <div className="px-3 py-2 border-b border-slate-200">
               <p className="text-xs font-semibold text-slate-500 uppercase">
-                🗺️ 投稿された場所 {stories && `(${stories.features.length})`}
+                🗺️ 投稿された場所 {uniqueLocations.length > 0 && `(${uniqueLocations.length})`}
               </p>
             </div>
 
-            {stories && stories.features.length > 0 ? (
+            {uniqueLocations.length > 0 ? (
               <div>
-                {stories.features.map((feature) => (
+                {uniqueLocations.map((location) => (
                   <button
-                    key={feature.id}
-                    onClick={() => handleSelect(`story-${feature.id}`)}
+                    key={location.key}
+                    onClick={() => handleSelect(`story-${location.representativeId}`)}
                     className="w-full text-left px-4 py-2 hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-0"
                   >
-                    <div className="font-medium text-slate-800">{feature.properties.title}</div>
-                    {feature.properties.locationName && (
-                      <div className="text-xs text-slate-500 mt-0.5">
-                        📍 {feature.properties.locationName}
-                      </div>
-                    )}
+                    <div className="font-medium text-slate-800">{location.name}</div>
+                    <div className="text-xs text-slate-500 mt-0.5">
+                      📍 {location.storyCount}件のストーリー
+                    </div>
                   </button>
                 ))}
               </div>

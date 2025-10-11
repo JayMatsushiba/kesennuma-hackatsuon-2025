@@ -34,7 +34,7 @@ export default function CesiumViewer({
   const [selectedStoryId, setSelectedStoryId] = useState<string | null>(null);
   const [allStories, setAllStories] = useState<Story[]>([]);
   const [nearbyStories, setNearbyStories] = useState<Story[]>([]);
-  const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number; name?: string } | null>(null);
   const [showSidebar, setShowSidebar] = useState(false);
   const [layers, setLayers] = useState<Layer[]>(DEFAULT_LAYERS);
 
@@ -69,7 +69,6 @@ export default function CesiumViewer({
     onEntityClick: useCallback((event: EntityClickEvent) => {
       setSelectedStory(event);
       setSelectedStoryId(String(event.entityId));
-      setSelectedLocation({ lat: event.position.latitude, lng: event.position.longitude });
 
       // Filter stories to only show those at the clicked location
       const storiesAtLocation = findStoriesAtLocation(
@@ -77,7 +76,22 @@ export default function CesiumViewer({
         event.position.longitude,
         allStories
       );
-      setNearbyStories(storiesAtLocation);
+
+      // Remove duplicates by ID (safeguard)
+      const uniqueStories = Array.from(
+        new Map(storiesAtLocation.map(story => [story.id, story])).values()
+      );
+
+      // Get location name from first story (they all share same location)
+      const locationName = uniqueStories[0]?.title?.split(' - ')[0] || 'この場所';
+
+      setSelectedLocation({
+        lat: event.position.latitude,
+        lng: event.position.longitude,
+        name: locationName,
+      });
+
+      setNearbyStories(uniqueStories);
       setShowSidebar(true);
       onStoryClick?.(event);
     }, [onStoryClick, allStories, findStoriesAtLocation]),
@@ -86,7 +100,13 @@ export default function CesiumViewer({
   // Convert GeoJSON features to Story objects when featureCollection changes
   useEffect(() => {
     if (featureCollection?.features) {
-      const stories: Story[] = featureCollection.features.map(feature => ({
+      // Flatten all stories from deduplicated markers
+      // Each feature now has _allStoriesAtLocation containing all stories at that location
+      const allFeatures = featureCollection.features.flatMap(feature =>
+        feature.properties._allStoriesAtLocation || [feature]
+      );
+
+      const stories: Story[] = allFeatures.map(feature => ({
         id: String(feature.id),
         title: feature.properties.title || 'Untitled',
         slug: feature.properties.slug,
@@ -101,7 +121,13 @@ export default function CesiumViewer({
         tags: feature.properties.tags || [],
         content: undefined, // Will be fetched when story is clicked
       }));
-      setAllStories(stories);
+
+      // Remove duplicates by ID (safeguard)
+      const uniqueStories = Array.from(
+        new Map(stories.map(story => [story.id, story])).values()
+      );
+
+      setAllStories(uniqueStories);
     }
   }, [featureCollection]);
 
@@ -226,11 +252,12 @@ export default function CesiumViewer({
       )}
 
       {/* Story Sidebar - Custom collapsible sidebar for stories */}
-      {showSidebar && nearbyStories.length > 0 && (
+      {showSidebar && nearbyStories.length > 0 && selectedLocation && (
         <StorySidebar
           stories={nearbyStories}
           selectedStoryId={selectedStoryId}
           onStorySelect={handleStorySelect}
+          locationName={selectedLocation.name}
           onClose={() => {
             setShowSidebar(false);
             setSelectedStoryId(null);
