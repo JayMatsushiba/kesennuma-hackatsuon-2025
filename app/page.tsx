@@ -79,7 +79,7 @@ export default async function HomePage() {
                 3D地図で巡る、みんなの記憶と体験
               </p>
             </div>
-            <Button asChild size="default" className="bg-brand-600 hover:bg-brand-700">
+            <Button asChild size="default" className="bg-brand-600 hover:bg-brand-700 text-white hover:text-white transition-colors duration-200">
               <Link href="/submit">
                 投稿する
               </Link>
@@ -108,9 +108,9 @@ export default async function HomePage() {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
-            <Button asChild size="lg" className="w-full sm:w-auto bg-brand-600 hover:bg-brand-700 text-lg h-14 px-8 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all">
+            <Button asChild size="lg" className="w-full sm:w-auto bg-brand-600 hover:bg-brand-700 text-white hover:text-white text-lg px-8 transition-colors duration-200">
               <Link href="/test-cesium">
-                <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -121,9 +121,9 @@ export default async function HomePage() {
                 3D地図を探索する
               </Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="w-full sm:w-auto text-brand-600 border-2 border-brand-600 hover:bg-brand-50 text-lg h-14 px-8">
+            <Button asChild variant="outline" size="lg" className="w-full sm:w-auto text-brand-600 hover:text-brand-700 border-2 border-brand-600 hover:border-brand-700 hover:bg-slate-50 text-lg px-8 transition-colors duration-200">
               <Link href="/submit">
-                <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -160,39 +160,38 @@ export default async function HomePage() {
           <div className="grid md:grid-cols-3 gap-8">
             <Link
               href="/test-cesium"
-              className="group block p-8 bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-2xl hover:shadow-xl transition-all border border-blue-200/50 hover:scale-[1.02]"
+              className="group block p-8 bg-gradient-to-br from-blue-50 to-white rounded-2xl hover:shadow-lg transition-shadow duration-200 border border-slate-200"
             >
               <div className="text-5xl mb-4">🗺️</div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-3 group-hover:text-brand-600 transition-colors">
+              <h3 className="text-xl font-bold text-slate-900 mb-3 group-hover:text-brand-600 transition-colors">
                 3D地図を見る
               </h3>
-              <p className="text-slate-700 leading-relaxed">
+              <p className="text-slate-600 leading-relaxed">
                 気仙沼の街を3Dで自由に探索。実際の場所と結びついた
-                物語を発見できます。リアルな地形と建物で、訪れる前に街の雰囲気を感じられます。
+                物語を発見できます。
               </p>
             </Link>
 
             <Link
               href="/submit"
-              className="group block p-8 bg-gradient-to-br from-green-50 to-green-100/50 rounded-2xl hover:shadow-xl transition-all border border-green-200/50 hover:scale-[1.02]"
+              className="group block p-8 bg-gradient-to-br from-green-50 to-white rounded-2xl hover:shadow-lg transition-shadow duration-200 border border-slate-200"
             >
               <div className="text-5xl mb-4">📝</div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-3 group-hover:text-brand-600 transition-colors">
+              <h3 className="text-xl font-bold text-slate-900 mb-3 group-hover:text-brand-600 transition-colors">
                 投稿する
               </h3>
-              <p className="text-slate-700 leading-relaxed">
+              <p className="text-slate-600 leading-relaxed">
                 あなたの体験を地図に残しましょう。
-                写真と文章で簡単に投稿。震災の記憶、日常の喜び、思い出の場所。
-                どんな物語も大切にお預かりします。
+                写真と文章で簡単に投稿。
               </p>
             </Link>
 
-            <div className="group p-8 bg-gradient-to-br from-purple-50 to-purple-100/50 rounded-2xl border border-purple-200/50">
+            <div className="group p-8 bg-gradient-to-br from-purple-50 to-white rounded-2xl border border-slate-200">
               <div className="text-5xl mb-4">🏷️</div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-3">
+              <h3 className="text-xl font-bold text-slate-900 mb-3">
                 テーマで探す
               </h3>
-              <p className="text-slate-700 leading-relaxed mb-4">
+              <p className="text-slate-600 leading-relaxed mb-4">
                 興味のあるテーマから物語を探索できます。
               </p>
               <div className="flex flex-wrap gap-2">
