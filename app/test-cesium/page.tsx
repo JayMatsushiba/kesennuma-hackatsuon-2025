@@ -16,18 +16,6 @@ export default function TestCesiumPage() {
         </Link>
       </div>
 
-      {/* Info panel */}
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 max-w-md">
-        <div className="bg-white/90 backdrop-blur-sm rounded-lg shadow-lg border border-slate-200 p-4 text-center">
-          <h2 className="font-bold text-slate-900 mb-1">
-            気仙沼3D地図
-          </h2>
-          <p className="text-sm text-slate-600">
-            左上のメニューで視点を切り替え、マーカーをクリックで詳細表示
-          </p>
-        </div>
-      </div>
-
       {/* Cesium Viewer */}
       <CesiumViewer
         showViewpointSelector={true}
