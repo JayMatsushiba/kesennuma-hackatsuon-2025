@@ -16,7 +16,7 @@ export interface Story {
   createdAt: Date | string;
 }
 
-// GeoJSON types
+// GeoJSON types (updated for Supabase schema)
 export interface StoryFeature {
   type: 'Feature';
   id: number;
@@ -27,10 +27,15 @@ export interface StoryFeature {
   properties: {
     title: string;
     description: string;
-    mediaUrl?: string | null;
-    submitter?: string | null;
-    createdAt: string;
-    tags?: string[];
+    slug: string;
+    locationName: string;
+    coverImageUrl?: string | null;
+    publishedAt?: string | null;
+    tags: Array<{
+      id: number;
+      name: string;
+      color: string;
+    }>;
   };
 }
 

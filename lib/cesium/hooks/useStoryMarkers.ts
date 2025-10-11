@@ -161,7 +161,12 @@ export function useStoryMarkers({
       entities.forEach((entity: any) => {
         if (entity._kesennumaFeature) {
           const tags = entity._kesennumaFeature.properties.tags || [];
-          entity.show = tags.includes(tag);
+          // Tags are now objects from Supabase: {id, name, color}
+          // Support both old (string) and new (object) formats
+          const hasTag = tags.some((t: any) =>
+            typeof t === 'string' ? t === tag : t.name === tag || t.id === tag
+          );
+          entity.show = hasTag;
         }
       });
 

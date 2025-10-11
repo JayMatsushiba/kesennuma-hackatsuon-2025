@@ -10,23 +10,32 @@ import { MARKER_DEFAULTS, TAG_CATEGORIES } from '../config/cesium-config';
  * Create HTML description for entity popup
  */
 export function createEntityDescription(feature: StoryFeature): string {
-  const { title, description, mediaUrl, submitter, createdAt, tags } = feature.properties;
+  const { title, description, slug, locationName, coverImageUrl, publishedAt, tags } = feature.properties;
 
-  // Format date
-  const date = new Date(createdAt);
-  const dateStr = date.toLocaleDateString('ja-JP', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+  // Format date (use publishedAt from Supabase)
+  let dateStr = '日付不明';
+  if (publishedAt) {
+    try {
+      const date = new Date(publishedAt);
+      if (!isNaN(date.getTime())) {
+        dateStr = date.toLocaleDateString('ja-JP', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        });
+      }
+    } catch (e) {
+      console.warn('Invalid date:', publishedAt);
+    }
+  }
 
-  // Tag badges
+  // Tag badges (tags are now objects from Supabase: {id, name, color})
   const tagBadges = (tags || [])
     .map((tag) => {
-      const category = TAG_CATEGORIES.find((c) => c.id === tag);
-      const color = category?.color || '#6b7280';
-      const label = category?.labelJa || tag;
-      return `<span style="display: inline-block; background: ${color}; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; margin-right: 4px;">${label}</span>`;
+      // Tags from Supabase already have name and color
+      const tagName = typeof tag === 'object' && tag.name ? tag.name : String(tag);
+      const tagColor = typeof tag === 'object' && tag.color ? tag.color : '#6b7280';
+      return `<span style="display: inline-block; background: ${tagColor}; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; margin-right: 4px;">${tagName}</span>`;
     })
     .join('');
 
@@ -34,15 +43,15 @@ export function createEntityDescription(feature: StoryFeature): string {
     <div style="font-family: system-ui, -apple-system, sans-serif; max-width: 360px; padding: 4px;">
       <h3 style="margin: 0 0 8px 0; font-size: 1.125rem; font-weight: 600; color: #0f172a;">${title}</h3>
       ${tagBadges ? `<div style="margin-bottom: 8px;">${tagBadges}</div>` : ''}
+      ${locationName ? `<p style="font-size: 0.875rem; color: #64748b; margin: 0 0 8px 0;">📍 ${locationName}</p>` : ''}
       <p style="white-space: pre-wrap; line-height: 1.6; color: #334155; margin: 0 0 12px 0;">${description}</p>
       ${
-        mediaUrl
-          ? `<img src="${mediaUrl}" alt="${title}" style="max-width: 100%; height: auto; border-radius: 8px; margin-bottom: 12px; display: block;" />`
+        coverImageUrl
+          ? `<img src="${coverImageUrl}" alt="${title}" style="max-width: 100%; height: auto; border-radius: 8px; margin-bottom: 12px; display: block;" />`
           : ''
       }
       <div style="font-size: 0.875rem; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 8px;">
-        ${submitter ? `<p style="margin: 4px 0;">投稿者: <strong>${submitter}</strong></p>` : ''}
-        <p style="margin: 4px 0;">投稿日: ${dateStr}</p>
+        <p style="margin: 4px 0;">公開日: ${dateStr}</p>
       </div>
     </div>
   `;
@@ -89,12 +98,18 @@ export function styleEntityBillboard(
 /**
  * Get marker color by tag category
  */
-export function getMarkerColorByTag(tags: string[]): string {
+export function getMarkerColorByTag(tags: Array<{id: number; name: string; color: string}> | string[]): string {
   if (!tags || tags.length === 0) return MARKER_DEFAULTS.color;
 
-  // Return color of first matching tag
-  for (const tag of tags) {
-    const category = TAG_CATEGORIES.find((c) => c.id === tag);
+  // Tags from Supabase are objects with color property
+  const firstTag = tags[0];
+  if (typeof firstTag === 'object' && firstTag.color) {
+    return firstTag.color;
+  }
+
+  // Fallback for old string-based tags
+  if (typeof firstTag === 'string') {
+    const category = TAG_CATEGORIES.find((c) => c.id === firstTag);
     if (category) return category.color;
   }
 
