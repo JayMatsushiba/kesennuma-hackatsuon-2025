@@ -22,7 +22,7 @@ export const DEFAULT_VIEWER_CONFIG = {
   homeButton: true, // Keep home button
   sceneModePicker: false, // Lock to 3D mode
   selectionIndicator: true, // Show selection indicator
-  infoBox: true, // Show info box on click
+  infoBox: false, // Disable default info box (using custom sidebar)
   fullscreenButton: true, // Allow fullscreen
   vrButton: false, // No VR support
 

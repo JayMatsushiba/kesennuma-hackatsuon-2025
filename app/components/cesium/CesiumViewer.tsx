@@ -5,7 +5,7 @@
 
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useCesiumViewer } from '@/lib/cesium/hooks/useCesiumViewer';
 import { useStoryMarkers } from '@/lib/cesium/hooks/useStoryMarkers';
 import { useCameraControl } from '@/lib/cesium/hooks/useCameraControl';
@@ -14,6 +14,7 @@ import type { EntityClickEvent } from '@/lib/cesium/types';
 import LoadingOverlay from './LoadingOverlay';
 import ViewpointSelector from './ViewpointSelector';
 import LayersPanel, { Layer } from './LayersPanel';
+import StorySidebar, { Story } from './StorySidebar';
 import { DEFAULT_LAYERS } from '@/lib/cesium/config/layers';
 
 export interface CesiumViewerProps {
@@ -30,6 +31,11 @@ export default function CesiumViewer({
   className = '',
 }: CesiumViewerProps) {
   const [selectedStory, setSelectedStory] = useState<EntityClickEvent | null>(null);
+  const [selectedStoryId, setSelectedStoryId] = useState<string | null>(null);
+  const [allStories, setAllStories] = useState<Story[]>([]);
+  const [nearbyStories, setNearbyStories] = useState<Story[]>([]);
+  const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [showSidebar, setShowSidebar] = useState(false);
   const [layers, setLayers] = useState<Layer[]>(DEFAULT_LAYERS);
 
   // Initialize viewer
@@ -38,6 +44,16 @@ export default function CesiumViewer({
     requestRenderMode: true,
   });
 
+  // Helper function to find stories at the same location (within 10m)
+  const findStoriesAtLocation = useCallback((lat: number, lng: number, stories: Story[]) => {
+    const DISTANCE_THRESHOLD = 0.0001; // ~10 meters in degrees
+    return stories.filter(story => {
+      const latDiff = Math.abs(story.position.latitude - lat);
+      const lngDiff = Math.abs(story.position.longitude - lng);
+      return latDiff < DISTANCE_THRESHOLD && lngDiff < DISTANCE_THRESHOLD;
+    });
+  }, []);
+
   // Load story markers
   const storyMarkersEnabled = layers.find(l => l.id === 'story-markers')?.enabled ?? true;
   const {
@@ -45,15 +61,63 @@ export default function CesiumViewer({
     error: markersError,
     reload: reloadStories,
     dataSource: storyDataSource,
+    featureCollection,
   } = useStoryMarkers({
     viewer,
     Cesium,
     enabled: !!viewer && storyMarkersEnabled,
     onEntityClick: useCallback((event: EntityClickEvent) => {
       setSelectedStory(event);
+      setSelectedStoryId(String(event.entityId));
+      setSelectedLocation({ lat: event.position.latitude, lng: event.position.longitude });
+
+      // Filter stories to only show those at the clicked location
+      const storiesAtLocation = findStoriesAtLocation(
+        event.position.latitude,
+        event.position.longitude,
+        allStories
+      );
+      setNearbyStories(storiesAtLocation);
+      setShowSidebar(true);
       onStoryClick?.(event);
-    }, [onStoryClick]),
+    }, [onStoryClick, allStories, findStoriesAtLocation]),
   });
+
+  // Convert GeoJSON features to Story objects when featureCollection changes
+  useEffect(() => {
+    if (featureCollection?.features) {
+      const stories: Story[] = featureCollection.features.map(feature => ({
+        id: String(feature.id),
+        title: feature.properties.title || 'Untitled',
+        description: feature.properties.description || '',
+        mediaUrl: feature.properties.coverImageUrl || undefined,
+        submitter: undefined, // Not available in current schema
+        createdAt: feature.properties.publishedAt || undefined,
+        position: {
+          latitude: feature.geometry.coordinates[1],
+          longitude: feature.geometry.coordinates[0],
+        },
+        tags: feature.properties.tags || [],
+        content: undefined, // Will be fetched when story is clicked
+      }));
+      setAllStories(stories);
+    }
+  }, [featureCollection]);
+
+  // Handle story selection from sidebar
+  const handleStorySelect = useCallback((storyId: string) => {
+    setSelectedStoryId(storyId);
+
+    // Find the entity in Cesium and select it (but don't fly - camera stays in place)
+    if (viewer && storyDataSource && Cesium) {
+      const entity = storyDataSource.entities.getById(storyId);
+      if (entity) {
+        // Just select the entity without moving the camera
+        viewer.selectedEntity = entity;
+        viewer.scene.requestRender();
+      }
+    }
+  }, [viewer, storyDataSource, Cesium]);
 
   // Camera controls
   const { flyToViewpoint, resetView } = useCameraControl({ viewer, Cesium });
@@ -160,22 +224,24 @@ export default function CesiumViewer({
         />
       )}
 
-      {/* Optional: Story info card (if you want custom popup outside Cesium's built-in infoBox) */}
-      {/* {selectedStory && (
-        <div className="absolute bottom-4 left-4 z-10 bg-white rounded-xl shadow-2xl p-4 max-w-sm">
-          <h3 className="font-bold text-lg mb-2">{selectedStory.title}</h3>
-          <p className="text-sm text-slate-600 whitespace-pre-wrap">{selectedStory.description}</p>
-          {selectedStory.mediaUrl && (
-            <img src={selectedStory.mediaUrl} alt={selectedStory.title} className="mt-2 rounded-lg w-full" />
-          )}
-          <button
-            onClick={() => setSelectedStory(null)}
-            className="mt-2 text-sm text-slate-500 hover:text-slate-700"
-          >
-            閉じる
-          </button>
-        </div>
-      )} */}
+      {/* Story Sidebar - Custom collapsible sidebar for stories */}
+      {showSidebar && nearbyStories.length > 0 && (
+        <StorySidebar
+          stories={nearbyStories}
+          selectedStoryId={selectedStoryId}
+          onStorySelect={handleStorySelect}
+          onClose={() => {
+            setShowSidebar(false);
+            setSelectedStoryId(null);
+            setSelectedLocation(null);
+            setNearbyStories([]);
+            if (viewer) {
+              viewer.selectedEntity = undefined;
+              viewer.scene.requestRender();
+            }
+          }}
+        />
+      )}
     </div>
   );
 }
