@@ -17,6 +17,7 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
     "@prisma/client": "^5.20.0",
     "@supabase/supabase-js": "^2.75.0",
     "cesium": "^1.121.1",
