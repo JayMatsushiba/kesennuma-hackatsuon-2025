@@ -10,6 +10,8 @@ type ContentBlock = {
     content?: string;
     imageUrl?: string;
     caption?: string;
+    imageFile?: File | null;
+    imagePreview?: string | null;
   };
 };
 

@@ -15,6 +15,7 @@ import LoadingOverlay from './LoadingOverlay';
 import ViewpointSelector from './ViewpointSelector';
 import LayersPanel, { Layer } from './LayersPanel';
 import StorySidebar, { Story } from './StorySidebar';
+import TagFilter from './TagFilter';
 import { DEFAULT_LAYERS } from '@/lib/cesium/config/layers';
 
 export interface CesiumViewerProps {
@@ -36,6 +37,8 @@ export default function CesiumViewer({
   const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number; name?: string } | null>(null);
   const [showSidebar, setShowSidebar] = useState(false);
   const [layers, setLayers] = useState<Layer[]>(DEFAULT_LAYERS);
+  const [selectedTags, setSelectedTags] = useState<number[]>([]);
+  const [isViewpointSelectorOpen, setIsViewpointSelectorOpen] = useState(false);
 
   // Initialize viewer
   const { viewer, Cesium, isLoading: viewerLoading, error: viewerError, containerRef } = useCesiumViewer({
@@ -46,12 +49,22 @@ export default function CesiumViewer({
   // Helper function to find stories at the same location (within 10m)
   const findStoriesAtLocation = useCallback((lat: number, lng: number, stories: Story[]) => {
     const DISTANCE_THRESHOLD = 0.0001; // ~10 meters in degrees
-    return stories.filter(story => {
+    let filteredStories = stories.filter(story => {
       const latDiff = Math.abs(story.position.latitude - lat);
       const lngDiff = Math.abs(story.position.longitude - lng);
       return latDiff < DISTANCE_THRESHOLD && lngDiff < DISTANCE_THRESHOLD;
     });
-  }, []);
+
+    // Filter by selected tags if any
+    if (selectedTags.length > 0) {
+      filteredStories = filteredStories.filter(story => {
+        const storyTags = story.tags || [];
+        return storyTags.some((tag: any) => selectedTags.includes(tag?.id || tag));
+      });
+    }
+
+    return filteredStories;
+  }, [selectedTags]);
 
   // Load story markers
   const storyMarkersEnabled = layers.find(l => l.id === 'story-markers')?.enabled ?? true;
@@ -130,6 +143,49 @@ export default function CesiumViewer({
     }
   }, [featureCollection]);
 
+  // Filter markers by selected tags
+  useEffect(() => {
+    if (!storyDataSource || !viewer) return;
+
+    const showAll = selectedTags.length === 0;
+    const entities = storyDataSource.entities.values;
+
+    // Update visibility for all entities
+    for (let i = 0; i < entities.length; i++) {
+      const entity = entities[i];
+
+      if (!entity || !entity._kesennumaFeature) {
+        continue;
+      }
+
+      if (showAll) {
+        // Show all markers when no tags selected
+        entity.show = true;
+      } else {
+        // Filter by tags
+        const allStoriesAtLocation = entity._kesennumaFeature.properties._allStoriesAtLocation || [entity._kesennumaFeature];
+
+        const hasMatch = allStoriesAtLocation.some((feature: any) => {
+          const storyTags = feature.properties?.tags || [];
+          return storyTags.some((tag: any) => selectedTags.includes(tag?.id || tag));
+        });
+
+        entity.show = hasMatch;
+      }
+    }
+
+    // Force Cesium to update and render
+    if (viewer.scene) {
+      viewer.scene.requestRender();
+      // Request one more render to ensure visibility updates are applied
+      requestAnimationFrame(() => {
+        if (viewer.scene) {
+          viewer.scene.requestRender();
+        }
+      });
+    }
+  }, [selectedTags, storyDataSource, viewer]);
+
   // Handle story selection from sidebar
   const handleStorySelect = useCallback((storyId: string) => {
     setSelectedStoryId(storyId);
@@ -156,17 +212,37 @@ export default function CesiumViewer({
       const entities = storyDataSource.entities.values;
       const entity = entities.find((e: any) => e.id === storyId || e._kesennumaFeature?.id === storyId);
 
-      if (entity && viewer) {
+      if (entity && viewer && Cesium) {
+        // Get position from entity
+        const position = entity.position?.getValue(Cesium.JulianDate.now());
+
+        if (position) {
+          const cartographic = Cesium.Cartographic.fromCartesian(position);
+          const lat = Cesium.Math.toDegrees(cartographic.latitude);
+          const lng = Cesium.Math.toDegrees(cartographic.longitude);
+
+          // Find stories at this location
+          const storiesAtLocation = findStoriesAtLocation(lat, lng, allStories);
+
+          // Get location name from first story
+          const locationName = storiesAtLocation[0]?.title?.split(' - ')[0] || 'この場所';
+
+          // Open sidebar with stories
+          setSelectedLocation({ lat, lng, name: locationName });
+          setNearbyStories(storiesAtLocation);
+          setShowSidebar(true);
+          setSelectedStoryId(null); // Don't auto-select
+        }
+
+        // Fly to entity
         viewer.flyTo(entity, {
           duration: 1.5,
-          offset: new (Cesium as any).HeadingPitchRange(
+          offset: new Cesium.HeadingPitchRange(
             0,
-            (Cesium as any).Math.toRadians(-30),
+            Cesium.Math.toRadians(-30),
             500
           ),
         }).then(() => {
-          // Set as selected entity AFTER camera flight completes
-          // This shows the infoBox with story details
           viewer.selectedEntity = entity;
           viewer.scene.requestRender();
         });
@@ -175,7 +251,7 @@ export default function CesiumViewer({
       // Use standard viewpoint
       flyToViewpoint(viewpointId);
     }
-  }, [flyToViewpoint, storyDataSource, viewer, Cesium]);
+  }, [flyToViewpoint, storyDataSource, viewer, Cesium, allStories, findStoriesAtLocation]);
 
   // 3D Buildings (OSM - 350M+ buildings worldwide)
   const buildingsEnabled = layers.find(l => l.id === 'osm-buildings')?.enabled ?? true;
@@ -211,6 +287,11 @@ export default function CesiumViewer({
     }
   }, [viewer, storyDataSource, osmBuildings]);
 
+  // Tag filter handler
+  const handleTagsChange = useCallback((tagIds: number[]) => {
+    setSelectedTags(tagIds);
+  }, []);
+
   const isLoading = viewerLoading || markersLoading || buildingsLoading;
   const error = viewerError || markersError;
 
@@ -238,7 +319,19 @@ export default function CesiumViewer({
 
       {/* Viewpoint selector overlay */}
       {showViewpointSelector && viewer && (
-        <ViewpointSelector onSelectViewpoint={handleViewpointSelect} onReset={resetView} />
+        <ViewpointSelector
+          onSelectViewpoint={handleViewpointSelect}
+          onReset={resetView}
+          onOpenChange={setIsViewpointSelectorOpen}
+        />
+      )}
+
+      {/* Tag filter - hidden when viewpoint selector is open */}
+      {viewer && !isViewpointSelectorOpen && (
+        <TagFilter
+          selectedTags={selectedTags}
+          onTagsChange={handleTagsChange}
+        />
       )}
 
       {/* Layers control panel */}

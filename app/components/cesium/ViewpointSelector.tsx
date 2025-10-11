@@ -11,10 +11,16 @@ import type { StoryFeatureCollection } from '@/lib/cesium/types';
 export interface ViewpointSelectorProps {
   onSelectViewpoint: (viewpointId: string) => void;
   onReset: () => void;
+  onOpenChange?: (isOpen: boolean) => void;
 }
 
-export default function ViewpointSelector({ onSelectViewpoint, onReset }: ViewpointSelectorProps) {
+export default function ViewpointSelector({ onSelectViewpoint, onReset, onOpenChange }: ViewpointSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
+
+  // Notify parent when open state changes
+  useEffect(() => {
+    onOpenChange?.(isOpen);
+  }, [isOpen, onOpenChange]);
   const [stories, setStories] = useState<StoryFeatureCollection | null>(null);
   const [uniqueLocations, setUniqueLocations] = useState<Array<{
     key: string;
