@@ -6,14 +6,38 @@
 export interface Story {
   id: number;
   title: string;
-  description: string;
+  slug: string;
+  excerpt?: string | null;
   latitude: number;
   longitude: number;
-  mediaUrl?: string | null;
-  submitter?: string | null;
-  tags?: string | null; // JSON string array
-  approved: boolean;
+  coverImageUrl?: string | null;
+  authorId: string;
+  status: string; // 'pending_review' | 'approved' | 'rejected' | 'flagged'
+  featured: boolean;
+  viewCount: number;
+  publishedAt?: Date | string | null;
   createdAt: Date | string;
+  updatedAt: Date | string;
+  // Relations (optional for API responses)
+  contentBlocks?: StoryContentBlock[];
+  tags?: StoryTagRelation[];
+}
+
+export interface StoryContentBlock {
+  id: string;
+  storyId: number;
+  blockType: string; // 'text' | 'image' | 'video' | 'gallery' | 'quote' | 'embed' | 'model3d'
+  order: number;
+  data: string; // JSON string
+  createdAt: Date | string;
+}
+
+export interface StoryTagRelation {
+  tag: {
+    id: number;
+    name: string;
+    slug: string;
+  };
 }
 
 // GeoJSON types

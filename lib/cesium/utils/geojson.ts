@@ -19,13 +19,34 @@ export function storiesToGeoJSON(stories: Story[]): StoryFeatureCollection {
  * Convert single Story to GeoJSON Feature
  */
 export function storyToFeature(story: Story): StoryFeature {
-  // Parse tags if stored as JSON string
-  let tags: string[] = [];
-  if (story.tags) {
-    try {
-      tags = typeof story.tags === 'string' ? JSON.parse(story.tags) : story.tags;
-    } catch (e) {
-      console.warn(`Failed to parse tags for story ${story.id}:`, e);
+  // Extract tags from relations
+  const tags = story.tags?.map(t => t.tag.slug) || [];
+
+  // Extract description from first text content block
+  let description = story.excerpt || '';
+  if (story.contentBlocks && story.contentBlocks.length > 0) {
+    const firstTextBlock = story.contentBlocks.find(b => b.blockType === 'text');
+    if (firstTextBlock) {
+      try {
+        const data = JSON.parse(firstTextBlock.data);
+        description = data.content || story.excerpt || '';
+      } catch (e) {
+        console.warn(`Failed to parse content block for story ${story.id}:`, e);
+      }
+    }
+  }
+
+  // Extract media URL from first image content block or use cover image
+  let mediaUrl = story.coverImageUrl;
+  if (!mediaUrl && story.contentBlocks && story.contentBlocks.length > 0) {
+    const firstImageBlock = story.contentBlocks.find(b => b.blockType === 'image');
+    if (firstImageBlock) {
+      try {
+        const data = JSON.parse(firstImageBlock.data);
+        mediaUrl = data.url || null;
+      } catch (e) {
+        console.warn(`Failed to parse image block for story ${story.id}:`, e);
+      }
     }
   }
 
@@ -38,9 +59,9 @@ export function storyToFeature(story: Story): StoryFeature {
     },
     properties: {
       title: story.title,
-      description: story.description,
-      mediaUrl: story.mediaUrl,
-      submitter: story.submitter,
+      description: description,
+      mediaUrl: mediaUrl,
+      submitter: null, // No longer in new schema
       createdAt: story.createdAt instanceof Date ? story.createdAt.toISOString() : story.createdAt,
       tags,
     },

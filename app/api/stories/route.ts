@@ -9,7 +9,17 @@ import { storiesToGeoJSON } from '@/lib/cesium/utils/geojson';
 export async function GET() {
   try {
     const stories = await prisma.story.findMany({
-      where: { approved: true },
+      where: { status: 'approved' },
+      include: {
+        contentBlocks: {
+          orderBy: { order: 'asc' },
+        },
+        tags: {
+          include: {
+            tag: true,
+          },
+        },
+      },
       orderBy: { createdAt: 'desc' },
     });
 
