@@ -5,7 +5,7 @@
 
 'use client';
 
-import { MapPinIcon, UserIcon, ClockIcon, EyeIcon } from '@heroicons/react/24/outline';
+import { MapPinIcon, UserIcon, ClockIcon } from '@heroicons/react/24/outline';
 import type { Story, ContentBlock } from './StorySidebar';
 
 export interface StoryDetailProps {
@@ -165,8 +165,13 @@ function TextBlock({ data }: { data: any }) {
 function ImageBlock({ data }: { data: any }) {
   const { mediaId, caption, alt, layout = 'full' } = data;
 
-  // TODO: Fetch actual image URL from mediaId
-  const imageUrl = data.url || `/api/media/${mediaId}`;
+  // Priority: imageUrl (from submit form) > url > mediaId (future media table)
+  const imageUrl = data.imageUrl || data.url || (mediaId ? `/api/media/${mediaId}` : '');
+
+  // Don't render if no image URL
+  if (!imageUrl) {
+    return null;
+  }
 
   return (
     <figure className={`${layout === 'full' ? 'w-full' : 'max-w-lg mx-auto'}`}>
@@ -188,8 +193,13 @@ function ImageBlock({ data }: { data: any }) {
 function VideoBlock({ data }: { data: any }) {
   const { mediaId, caption, autoplay = false } = data;
 
-  // TODO: Fetch actual video URL from mediaId
-  const videoUrl = data.url || `/api/media/${mediaId}`;
+  // Priority: videoUrl (from submit form) > url > mediaId (future media table)
+  const videoUrl = data.videoUrl || data.url || (mediaId ? `/api/media/${mediaId}` : '');
+
+  // Don't render if no video URL
+  if (!videoUrl) {
+    return null;
+  }
 
   return (
     <figure className="w-full">
@@ -211,9 +221,9 @@ function VideoBlock({ data }: { data: any }) {
 }
 
 function GalleryBlock({ data }: { data: any }) {
-  const { mediaIds, layout = 'grid' } = data;
+  const { layout = 'grid' } = data;
 
-  // TODO: Fetch actual image URLs from mediaIds
+  // TODO: Fetch actual image URLs from data.mediaIds
   const images = data.images || [];
 
   return (
@@ -242,7 +252,7 @@ function QuoteBlock({ data }: { data: any }) {
   return (
     <blockquote className="border-l-4 border-blue-500 pl-6 py-2 my-4">
       <p className="text-lg text-slate-700 italic leading-relaxed">
-        "{text}"
+        &ldquo;{text}&rdquo;
       </p>
       {author && (
         <cite className="block mt-2 text-sm text-slate-600 not-italic">
@@ -287,9 +297,9 @@ function EmbedBlock({ data }: { data: any }) {
 }
 
 function Model3DBlock({ data }: { data: any }) {
-  const { mediaId, viewerSettings } = data;
+  const { mediaId } = data;
 
-  // TODO: Implement 3D model viewer (Cesium Ion, Three.js, etc.)
+  // TODO: Implement 3D model viewer (Cesium Ion, Three.js, etc.) with data.viewerSettings
   return (
     <div className="border border-slate-200 rounded-lg p-8 bg-slate-50 text-center">
       <p className="text-slate-600">3D Model Viewer</p>
