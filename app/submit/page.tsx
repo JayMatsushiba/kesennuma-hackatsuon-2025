@@ -39,6 +39,7 @@ export default function SubmitPage() {
   // Form state
   const [title, setTitle] = useState('');
   const [excerpt, setExcerpt] = useState('');
+  const [coverImageUrl, setCoverImageUrl] = useState('');
   const [locationName, setLocationName] = useState('');
   const [address, setAddress] = useState('');
   const [latitude, setLatitude] = useState('');
@@ -262,6 +263,7 @@ export default function SubmitPage() {
         body: JSON.stringify({
           title: title.trim(),
           excerpt: excerpt.trim(),
+          coverImageUrl: coverImageUrl.trim() || null,
           location: selectedLocationId
             ? { id: selectedLocationId } // Use existing location
             : {
@@ -366,6 +368,22 @@ export default function SubmitPage() {
                   placeholder="体験や思い出を書いてください..."
                   required
                 />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  カバー画像URL（任意）
+                </label>
+                <input
+                  type="url"
+                  value={coverImageUrl}
+                  onChange={(e) => setCoverImageUrl(e.target.value)}
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="例: https://example.com/image.jpg"
+                />
+                <p className="text-xs text-slate-500 mt-1">
+                  💡 地図上のマーカーとして表示される画像です
+                </p>
               </div>
             </div>
           </div>

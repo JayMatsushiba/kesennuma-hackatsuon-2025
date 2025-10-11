@@ -5,6 +5,7 @@
 
 import type { CesiumModule, MarkerStyle, StoryFeature } from '../types';
 import { MARKER_DEFAULTS, TAG_CATEGORIES } from '../config/cesium-config';
+import { getStyledBillboardImage } from './image-processing';
 
 /**
  * Create HTML description for entity popup
@@ -59,38 +60,62 @@ export function createEntityDescription(feature: StoryFeature): string {
 
 /**
  * Apply custom styling to entity billboard
+ * Supports custom images (thumbnails) like Hiroshima Archive with Japanese aesthetic
  */
-export function styleEntityBillboard(
+export async function styleEntityBillboard(
   entity: any,
   Cesium: CesiumModule,
-  customStyle?: Partial<MarkerStyle>
-) {
+  customStyle?: Partial<MarkerStyle>,
+  imageUrl?: string | null
+): Promise<void> {
   const style = { ...MARKER_DEFAULTS, ...customStyle };
 
   if (entity.billboard) {
-    // Scale
-    if (style.scale !== undefined) {
-      entity.billboard.scale = style.scale;
-    }
+    // Use custom image if provided (like Hiroshima Archive thumbnail approach)
+    if (imageUrl) {
+      // Process image with Japanese design principles (rounded corners, shadow, border)
+      const processedImageUrl = await getStyledBillboardImage(imageUrl, 80);
+      entity.billboard.image = processedImageUrl;
 
-    // Scale by distance
-    if (style.scaleByDistance) {
+      // Japanese design: Seijaku (serenity) - smooth scaling
+      entity.billboard.scale = 0.5;
+      // Scale by distance for better visibility (inspired by Hiroshima Archive)
       entity.billboard.scaleByDistance = new Cesium.NearFarScalar(
-        style.scaleByDistance.near,
-        style.scaleByDistance.nearValue,
-        style.scaleByDistance.far,
-        style.scaleByDistance.farValue
+        1500,  // near distance (1.5km)
+        1.4,   // scale at near (larger when close)
+        20000, // far distance (20km)
+        0.8    // scale at far (smaller when far)
       );
-    }
-
-    // Disable depth test (always visible)
-    if (style.disableDepthTest) {
+      // Disable depth test so markers are always visible
       entity.billboard.disableDepthTestDistance = Number.POSITIVE_INFINITY;
-    }
+      // Clear any existing color to show image properly (Ma - space to breathe)
+      entity.billboard.color = Cesium.Color.WHITE;
+    } else {
+      // Use default pin styling when no image available
+      // Scale
+      if (style.scale !== undefined) {
+        entity.billboard.scale = style.scale;
+      }
 
-    // Color (if custom color provided)
-    if (style.color) {
-      entity.billboard.color = Cesium.Color.fromCssColorString(style.color);
+      // Scale by distance
+      if (style.scaleByDistance) {
+        entity.billboard.scaleByDistance = new Cesium.NearFarScalar(
+          style.scaleByDistance.near,
+          style.scaleByDistance.nearValue,
+          style.scaleByDistance.far,
+          style.scaleByDistance.farValue
+        );
+      }
+
+      // Disable depth test (always visible)
+      if (style.disableDepthTest) {
+        entity.billboard.disableDepthTestDistance = Number.POSITIVE_INFINITY;
+      }
+
+      // Color (if custom color provided)
+      if (style.color) {
+        entity.billboard.color = Cesium.Color.fromCssColorString(style.color);
+      }
     }
   }
 }
@@ -118,39 +143,50 @@ export function getMarkerColorByTag(tags: Array<{id: number; name: string; color
 
 /**
  * Customize all entities in a data source
+ * Applies Japanese design principles to billboards with images
  */
-export function customizeDataSourceEntities(
+export async function customizeDataSourceEntities(
   dataSource: any,
   Cesium: CesiumModule,
   features: StoryFeature[]
-) {
+): Promise<void> {
   const entities = dataSource.entities.values;
 
-  entities.forEach((entity: any, index: number) => {
-    // Try to match by ID first, then by index as fallback
-    let feature = features.find((f) => f.id === entity.id);
-    if (!feature && index < features.length) {
-      feature = features[index];
-      console.log(`⚠️ Entity ${entity.id} matched by index to feature ${feature.id}`);
-    }
+  // Process all entities in parallel for better performance
+  await Promise.all(
+    entities.map(async (entity: any, index: number) => {
+      // Try to match by ID first, then by index as fallback
+      let feature = features.find((f) => f.id === entity.id);
+      if (!feature && index < features.length) {
+        feature = features[index];
+        console.log(`⚠️ Entity ${entity.id} matched by index to feature ${feature.id}`);
+      }
 
-    if (!feature) {
-      console.error(`❌ No feature found for entity ${entity.id} at index ${index}`);
-      return;
-    }
+      if (!feature) {
+        console.error(`❌ No feature found for entity ${entity.id} at index ${index}`);
+        return;
+      }
 
-    // Apply description
-    entity.description = createEntityDescription(feature);
+      // Apply description
+      entity.description = createEntityDescription(feature);
 
-    // Style billboard with tag-based color
-    const color = getMarkerColorByTag(feature.properties.tags || []);
-    styleEntityBillboard(entity, Cesium, { color });
+      // Get cover image URL for billboard (Hiroshima Archive + Japanese aesthetic)
+      const imageUrl = feature.properties.coverImageUrl;
 
-    // Store original feature data for later access
-    entity._kesennumaFeature = feature;
+      // Style billboard: use image if available, otherwise use tag-based color
+      if (imageUrl) {
+        await styleEntityBillboard(entity, Cesium, {}, imageUrl);
+        console.log(`✅ Styled marker with Japanese aesthetic: ${feature.properties.title}`);
+      } else {
+        const color = getMarkerColorByTag(feature.properties.tags || []);
+        await styleEntityBillboard(entity, Cesium, { color });
+        console.log(`✅ Styled marker with color: ${feature.properties.title}`);
+      }
 
-    console.log(`✅ Styled marker: ${feature.properties.title}`);
-  });
+      // Store original feature data for later access
+      entity._kesennumaFeature = feature;
+    })
+  );
 }
 
 /**

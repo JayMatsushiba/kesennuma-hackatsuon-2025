@@ -62,15 +62,14 @@ export function useStoryMarkers({
 
       setFeatureCollection(data);
 
-      // Load into Cesium
+      // Load into Cesium (only set markerSize, not markerColor - we'll set images/colors in customizeDataSourceEntities)
       const ds = await Cesium.GeoJsonDataSource.load(data, {
         clampToGround: true,
-        markerSize: MARKER_DEFAULTS.size,
-        markerColor: Cesium.Color.fromCssColorString(MARKER_DEFAULTS.color),
+        markerSize: MARKER_DEFAULTS.size, // Basic size, we'll customize color/image after
       });
 
-      // Customize entities (styling, descriptions)
-      customizeDataSourceEntities(ds, Cesium, data.features);
+      // Customize entities (styling, descriptions, images) with Japanese aesthetic
+      await customizeDataSourceEntities(ds, Cesium, data.features);
 
       // Enable clustering if needed
       if (CLUSTERING_CONFIG.enabled) {

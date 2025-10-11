@@ -41,9 +41,17 @@ export function useCesiumViewer(options?: CesiumViewerOptions): UseCesiumViewerR
       try {
         setIsLoading(true);
 
+        // Load Cesium CSS from public folder
+        if (!document.getElementById('cesium-widgets-css')) {
+          const link = document.createElement('link');
+          link.id = 'cesium-widgets-css';
+          link.rel = 'stylesheet';
+          link.href = '/cesium/Widgets/widgets.css';
+          document.head.appendChild(link);
+        }
+
         // Dynamic import Cesium
         const CesiumModule = await import('cesium');
-        await import('cesium/Build/Cesium/Widgets/widgets.css');
 
         if (!mounted) return;
 
