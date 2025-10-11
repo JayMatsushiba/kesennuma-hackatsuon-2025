@@ -89,6 +89,7 @@ export default function CesiumViewer({
       const stories: Story[] = featureCollection.features.map(feature => ({
         id: String(feature.id),
         title: feature.properties.title || 'Untitled',
+        slug: feature.properties.slug,
         description: feature.properties.description || '',
         mediaUrl: feature.properties.coverImageUrl || undefined,
         submitter: undefined, // Not available in current schema
