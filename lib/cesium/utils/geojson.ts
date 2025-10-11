@@ -19,16 +19,6 @@ export function storiesToGeoJSON(stories: Story[]): StoryFeatureCollection {
  * Convert single Story to GeoJSON Feature
  */
 export function storyToFeature(story: Story): StoryFeature {
-  // Parse tags if stored as JSON string
-  let tags: string[] = [];
-  if (story.tags) {
-    try {
-      tags = typeof story.tags === 'string' ? JSON.parse(story.tags) : story.tags;
-    } catch (e) {
-      console.warn(`Failed to parse tags for story ${story.id}:`, e);
-    }
-  }
-
   return {
     type: 'Feature',
     id: story.id,
@@ -39,10 +29,11 @@ export function storyToFeature(story: Story): StoryFeature {
     properties: {
       title: story.title,
       description: story.description,
-      mediaUrl: story.mediaUrl,
-      submitter: story.submitter,
-      createdAt: story.createdAt instanceof Date ? story.createdAt.toISOString() : story.createdAt,
-      tags,
+      slug: '', // Add slug if available in Story type
+      locationName: '', // Add location name if available in Story type
+      coverImageUrl: story.mediaUrl,
+      publishedAt: story.createdAt instanceof Date ? story.createdAt.toISOString() : story.createdAt,
+      tags: story.tags || [],
     },
   };
 }
@@ -60,16 +51,18 @@ export function isValidGeoJSON(data: any): data is StoryFeatureCollection {
 }
 
 /**
- * Filter features by tag
+ * Filter features by tag (by tag ID or name)
  */
 export function filterFeaturesByTag(
   featureCollection: StoryFeatureCollection,
-  tag: string
+  tagIdOrName: string | number
 ): StoryFeatureCollection {
   return {
     type: 'FeatureCollection',
     features: featureCollection.features.filter(
-      (f) => f.properties.tags && f.properties.tags.includes(tag)
+      (f) => f.properties.tags && f.properties.tags.some(
+        (t) => t.id === tagIdOrName || t.name === tagIdOrName
+      )
     ),
   };
 }
@@ -114,13 +107,13 @@ export function searchFeatures(
 }
 
 /**
- * Get feature count by tag
+ * Get feature count by tag (keyed by tag name)
  */
 export function getFeatureCountByTag(featureCollection: StoryFeatureCollection): Record<string, number> {
   const counts: Record<string, number> = {};
   featureCollection.features.forEach((f) => {
     (f.properties.tags || []).forEach((tag) => {
-      counts[tag] = (counts[tag] || 0) + 1;
+      counts[tag.name] = (counts[tag.name] || 0) + 1;
     });
   });
   return counts;

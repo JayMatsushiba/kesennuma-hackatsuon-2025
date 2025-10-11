@@ -14,7 +14,7 @@ export const SEED_STORIES: Omit<Story, 'id' | 'approved' | 'createdAt'>[] = [
     longitude: 141.606009,
     mediaUrl: null,
     submitter: '田中太郎',
-    tags: JSON.stringify(['fishing', 'daily-life']),
+    tags: [],
   },
   {
     title: '魚市場の賑わい',
@@ -23,7 +23,7 @@ export const SEED_STORIES: Omit<Story, 'id' | 'approved' | 'createdAt'>[] = [
     longitude: 141.5786374,
     mediaUrl: null,
     submitter: '佐藤花子',
-    tags: JSON.stringify(['fishing', 'food']),
+    tags: [],
   },
 
   // Oshima Island
@@ -34,7 +34,7 @@ export const SEED_STORIES: Omit<Story, 'id' | 'approved' | 'createdAt'>[] = [
     longitude: 141.606243,
     mediaUrl: null,
     submitter: '鈴木一郎',
-    tags: JSON.stringify(['nature', 'daily-life']),
+    tags: [],
   },
   {
     title: '大島大橋',
@@ -43,7 +43,7 @@ export const SEED_STORIES: Omit<Story, 'id' | 'approved' | 'createdAt'>[] = [
     longitude: 141.606243,
     mediaUrl: null,
     submitter: '山田次郎',
-    tags: JSON.stringify(['memorial', 'culture']),
+    tags: [],
   },
 
   // Memorial Sites
@@ -54,7 +54,7 @@ export const SEED_STORIES: Omit<Story, 'id' | 'approved' | 'createdAt'>[] = [
     longitude: 141.570,
     mediaUrl: null,
     submitter: '伊藤美咲',
-    tags: JSON.stringify(['memorial']),
+    tags: []  // Replace with actual tag objects:(['memorial']),
   },
   {
     title: '復興への歩み',
@@ -63,7 +63,7 @@ export const SEED_STORIES: Omit<Story, 'id' | 'approved' | 'createdAt'>[] = [
     longitude: 141.568,
     mediaUrl: null,
     submitter: '高橋健太',
-    tags: JSON.stringify(['memorial', 'daily-life']),
+    tags: []  // Replace with actual tag objects:(['memorial', 'daily-life']),
   },
 
   // Food & Culture
@@ -74,7 +74,7 @@ export const SEED_STORIES: Omit<Story, 'id' | 'approved' | 'createdAt'>[] = [
     longitude: 141.565,
     mediaUrl: null,
     submitter: '渡辺さくら',
-    tags: JSON.stringify(['food', 'fishing']),
+    tags: []  // Replace with actual tag objects:(['food', 'fishing']),
   },
   {
     title: 'みなとまつり',
@@ -83,7 +83,7 @@ export const SEED_STORIES: Omit<Story, 'id' | 'approved' | 'createdAt'>[] = [
     longitude: 141.566,
     mediaUrl: null,
     submitter: '小林直樹',
-    tags: JSON.stringify(['events', 'culture']),
+    tags: []  // Replace with actual tag objects:(['events', 'culture']),
   },
 
   // Bay Area
@@ -94,7 +94,7 @@ export const SEED_STORIES: Omit<Story, 'id' | 'approved' | 'createdAt'>[] = [
     longitude: 141.570,
     mediaUrl: null,
     submitter: '中村雅子',
-    tags: JSON.stringify(['nature', 'daily-life']),
+    tags: []  // Replace with actual tag objects:(['nature', 'daily-life']),
   },
   {
     title: '漁師町の日常',
@@ -103,7 +103,7 @@ export const SEED_STORIES: Omit<Story, 'id' | 'approved' | 'createdAt'>[] = [
     longitude: 141.572,
     mediaUrl: null,
     submitter: '佐々木和夫',
-    tags: JSON.stringify(['fishing', 'daily-life', 'culture']),
+    tags: []  // Replace with actual tag objects:(['fishing', 'daily-life', 'culture']),
   },
   {
     title: 'シャークミュージアム',
@@ -112,7 +112,7 @@ export const SEED_STORIES: Omit<Story, 'id' | 'approved' | 'createdAt'>[] = [
     longitude: 141.57946292489987,
     mediaUrl: null,
     submitter: '吉田真美',
-    tags: JSON.stringify(['culture', 'food', 'fishing']),
+    tags: []  // Replace with actual tag objects:(['culture', 'food', 'fishing']),
   },
   {
     title: '気仙沼駅前',
@@ -121,7 +121,7 @@ export const SEED_STORIES: Omit<Story, 'id' | 'approved' | 'createdAt'>[] = [
     longitude: 141.55931,
     mediaUrl: null,
     submitter: '木村健二',
-    tags: JSON.stringify(['daily-life']),
+    tags: []  // Replace with actual tag objects:(['daily-life']),
   },
   {
     title: 'Pier7（創/ウマレル）',
@@ -130,7 +130,7 @@ export const SEED_STORIES: Omit<Story, 'id' | 'approved' | 'createdAt'>[] = [
     longitude: 141.575339182962,
     mediaUrl: null,
     submitter: '内湾コミュニティ',
-    tags: JSON.stringify(['memorial', 'culture', 'daily-life']),
+    tags: []  // Replace with actual tag objects:(['memorial', 'culture', 'daily-life']),
   },
 ];
 
@@ -146,15 +146,11 @@ export function getSeedStories(): Omit<Story, 'id'>[] {
 }
 
 /**
- * Get stories by tag
+ * Get stories by tag (by tag ID or name)
  */
-export function getSeedStoriesByTag(tag: string): Omit<Story, 'id'>[] {
+export function getSeedStoriesByTag(tagIdOrName: string | number): Omit<Story, 'id'>[] {
   return getSeedStories().filter((story) => {
-    try {
-      const tags = JSON.parse(story.tags || '[]');
-      return tags.includes(tag);
-    } catch {
-      return false;
-    }
+    const tags = story.tags || [];
+    return tags.some((t) => t.id === tagIdOrName || t.name === tagIdOrName);
   });
 }

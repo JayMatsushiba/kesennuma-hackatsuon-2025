@@ -2,7 +2,7 @@
  * Cesium TypeScript definitions for Kesennuma Digital Experiences
  */
 
-// Core Story type (matches Prisma schema)
+// Core Story type (matches Supabase schema)
 export interface Story {
   id: number;
   title: string;
@@ -11,7 +11,11 @@ export interface Story {
   longitude: number;
   mediaUrl?: string | null;
   submitter?: string | null;
-  tags?: string | null; // JSON string array
+  tags?: Array<{
+    id: number;
+    name: string;
+    color: string;
+  }>;
   approved: boolean;
   createdAt: Date | string;
 }

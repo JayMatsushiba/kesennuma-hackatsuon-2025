@@ -40,6 +40,9 @@ export default function SubmitPage() {
   const [title, setTitle] = useState('');
   const [excerpt, setExcerpt] = useState('');
   const [coverImageUrl, setCoverImageUrl] = useState('');
+  const [uploadedImageFile, setUploadedImageFile] = useState<File | null>(null);
+  const [uploadedImagePreview, setUploadedImagePreview] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
   const [locationName, setLocationName] = useState('');
   const [address, setAddress] = useState('');
   const [latitude, setLatitude] = useState('');
@@ -216,6 +219,142 @@ export default function SubmitPage() {
     setContentBlocks((prev) => prev.filter((_, i) => i !== index));
   };
 
+  // Handle image file selection
+  const handleImageFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      setError('画像ファイルを選択してください');
+      return;
+    }
+
+    // Validate file size (10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      setError('ファイルサイズが大きすぎます（最大10MB）');
+      return;
+    }
+
+    setUploadedImageFile(file);
+
+    // Create preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setUploadedImagePreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Upload image to Supabase Storage
+  const uploadImage = async (): Promise<string | null> => {
+    if (!uploadedImageFile) return null;
+
+    try {
+      setUploading(true);
+      const formData = new FormData();
+      formData.append('file', uploadedImageFile);
+
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'アップロードに失敗しました');
+      }
+
+      const data = await response.json();
+      return data.url;
+    } catch (err) {
+      console.error('Upload error:', err);
+      throw err;
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  // Remove uploaded image
+  const removeUploadedImage = () => {
+    setUploadedImageFile(null);
+    setUploadedImagePreview(null);
+  };
+
+  // Handle drag-and-drop for cover image
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const files = e.dataTransfer.files;
+    if (files.length === 0) return;
+
+    const file = files[0];
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      setError('画像ファイルをドロップしてください');
+      return;
+    }
+
+    // Validate file size (10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      setError('ファイルサイズが大きすぎます（最大10MB）');
+      return;
+    }
+
+    setUploadedImageFile(file);
+
+    // Create preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setUploadedImagePreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Handle content block image file selection
+  const handleContentBlockImageChange = async (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      setError('画像ファイルを選択してください');
+      return;
+    }
+
+    // Validate file size (10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      setError('ファイルサイズが大きすぎます（最大10MB）');
+      return;
+    }
+
+    // Create preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      updateContentBlock(index, {
+        imageFile: file,
+        imagePreview: reader.result as string,
+      });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Remove content block image
+  const removeContentBlockImage = (index: number) => {
+    updateContentBlock(index, {
+      imageFile: null,
+      imagePreview: null,
+      imageUrl: '',
+    });
+  };
+
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -223,6 +362,46 @@ export default function SubmitPage() {
     setIsSubmitting(true);
 
     try {
+      // Upload cover image first if file is selected
+      let uploadedImageUrl = coverImageUrl;
+      if (uploadedImageFile) {
+        uploadedImageUrl = await uploadImage() || '';
+      }
+
+      // Upload all content block images
+      const processedContentBlocks = await Promise.all(
+        contentBlocks.map(async (block) => {
+          if (block.type === 'image' && block.data.imageFile) {
+            // Upload the image file
+            const formData = new FormData();
+            formData.append('file', block.data.imageFile);
+
+            const response = await fetch('/api/upload', {
+              method: 'POST',
+              body: formData,
+            });
+
+            if (!response.ok) {
+              throw new Error('画像のアップロードに失敗しました');
+            }
+
+            const data = await response.json();
+
+            // Return block with uploaded URL
+            return {
+              ...block,
+              data: {
+                ...block.data,
+                imageUrl: data.url,
+                imageFile: undefined, // Remove file object
+                imagePreview: undefined, // Remove preview
+              },
+            };
+          }
+          return block;
+        })
+      );
+
       // Validation
       if (!title.trim()) {
         throw new Error('タイトルを入力してください');
@@ -245,8 +424,8 @@ export default function SubmitPage() {
         throw new Error('緯度・経度の値が正しくありません');
       }
 
-      // Filter out empty content blocks
-      const validContent = contentBlocks
+      // Filter out empty content blocks (use processedContentBlocks with uploaded URLs)
+      const validContent = processedContentBlocks
         .filter((block) => {
           if (block.type === 'text') return block.data.content?.trim();
           if (block.type === 'image') return block.data.imageUrl?.trim();
@@ -263,7 +442,7 @@ export default function SubmitPage() {
         body: JSON.stringify({
           title: title.trim(),
           excerpt: excerpt.trim(),
-          coverImageUrl: coverImageUrl.trim() || null,
+          coverImageUrl: uploadedImageUrl.trim() || null,
           location: selectedLocationId
             ? { id: selectedLocationId } // Use existing location
             : {
@@ -370,20 +549,84 @@ export default function SubmitPage() {
                 />
               </div>
 
+              {/* Cover Image Upload */}
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  カバー画像URL（任意）
+                  カバー画像（任意）
                 </label>
-                <input
-                  type="url"
-                  value={coverImageUrl}
-                  onChange={(e) => setCoverImageUrl(e.target.value)}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="例: https://example.com/image.jpg"
-                />
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-slate-500 mb-3">
                   💡 地図上のマーカーとして表示される画像です
                 </p>
+
+                {/* Image Preview */}
+                {uploadedImagePreview && (
+                  <div className="mb-4 relative">
+                    <img
+                      src={uploadedImagePreview}
+                      alt="Preview"
+                      className="w-full max-w-md h-48 object-cover rounded-lg border-2 border-slate-200"
+                    />
+                    <button
+                      type="button"
+                      onClick={removeUploadedImage}
+                      className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                )}
+
+                {/* Upload Button */}
+                {!uploadedImagePreview && (
+                  <div className="space-y-3">
+                    <label className="block">
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/jpg,image/png,image/webp"
+                        onChange={handleImageFileChange}
+                        className="hidden"
+                        id="image-upload"
+                      />
+                      <div
+                        className="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center hover:border-blue-500 transition-colors cursor-pointer"
+                        onDragOver={handleDragOver}
+                        onDrop={handleDrop}
+                      >
+                        <svg className="mx-auto h-12 w-12 text-slate-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                          <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                        <p className="mt-2 text-sm text-slate-600">
+                          <span className="font-medium text-blue-600 hover:text-blue-500">ファイルを選択</span>
+                          {' '}またはドラッグ＆ドロップ
+                        </p>
+                        <p className="text-xs text-slate-500 mt-1">
+                          JPG、PNG、WebP（最大10MB）
+                        </p>
+                      </div>
+                    </label>
+
+                    {/* URL Input Alternative */}
+                    <div className="relative">
+                      <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-slate-300"></div>
+                      </div>
+                      <div className="relative flex justify-center text-xs">
+                        <span className="bg-white px-2 text-slate-500">または</span>
+                      </div>
+                    </div>
+
+                    <input
+                      type="url"
+                      value={coverImageUrl}
+                      onChange={(e) => setCoverImageUrl(e.target.value)}
+                      className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="画像URLを入力（例: https://example.com/image.jpg）"
+                      disabled={!!uploadedImageFile}
+                    />
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -617,16 +860,72 @@ export default function SubmitPage() {
                   )}
 
                   {block.type === 'image' && (
-                    <div className="space-y-2">
-                      <input
-                        type="url"
-                        value={block.data.imageUrl || ''}
-                        onChange={(e) =>
-                          updateContentBlock(index, { imageUrl: e.target.value })
-                        }
-                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="画像URL"
-                      />
+                    <div className="space-y-3">
+                      {/* Image Preview */}
+                      {block.data.imagePreview && (
+                        <div className="relative">
+                          <img
+                            src={block.data.imagePreview}
+                            alt="Preview"
+                            className="w-full h-48 object-cover rounded-lg border-2 border-slate-200"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeContentBlockImage(index)}
+                            className="absolute top-2 right-2 bg-red-500 text-white p-1.5 rounded-full hover:bg-red-600 transition-colors"
+                          >
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                        </div>
+                      )}
+
+                      {/* Upload Button */}
+                      {!block.data.imagePreview && (
+                        <div className="space-y-2">
+                          <label className="block">
+                            <input
+                              type="file"
+                              accept="image/jpeg,image/jpg,image/png,image/webp"
+                              onChange={(e) => handleContentBlockImageChange(index, e)}
+                              className="hidden"
+                            />
+                            <div className="border-2 border-dashed border-slate-300 rounded-lg p-4 text-center hover:border-blue-500 transition-colors cursor-pointer">
+                              <svg className="mx-auto h-8 w-8 text-slate-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+                              </svg>
+                              <p className="mt-1 text-xs text-slate-600">
+                                <span className="font-medium text-blue-600 hover:text-blue-500">画像を選択</span>
+                              </p>
+                              <p className="text-xs text-slate-500 mt-1">JPG, PNG, WebP（最大10MB）</p>
+                            </div>
+                          </label>
+
+                          {/* URL Input Alternative */}
+                          <div className="relative">
+                            <div className="absolute inset-0 flex items-center">
+                              <div className="w-full border-t border-slate-300"></div>
+                            </div>
+                            <div className="relative flex justify-center text-xs">
+                              <span className="bg-white px-2 text-slate-500">または</span>
+                            </div>
+                          </div>
+
+                          <input
+                            type="url"
+                            value={block.data.imageUrl || ''}
+                            onChange={(e) =>
+                              updateContentBlock(index, { imageUrl: e.target.value })
+                            }
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="画像URLを入力"
+                            disabled={!!block.data.imageFile}
+                          />
+                        </div>
+                      )}
+
+                      {/* Caption */}
                       <input
                         type="text"
                         value={block.data.caption || ''}
@@ -654,10 +953,10 @@ export default function SubmitPage() {
             </button>
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || uploading}
               className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed font-medium"
             >
-              {isSubmitting ? '送信中...' : '投稿する'}
+              {uploading ? '画像アップロード中...' : isSubmitting ? '送信中...' : '投稿する'}
             </button>
           </div>
         </form>

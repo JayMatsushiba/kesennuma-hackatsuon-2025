@@ -51,10 +51,10 @@ type TagData = {
  */
 export async function GET(
   request: Request,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { slug } = params;
+    const { slug } = await params;
 
     // Fetch story with location and tags
     const { data, error: storyError } = await supabase

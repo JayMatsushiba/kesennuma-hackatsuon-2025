@@ -18,14 +18,27 @@ const nextConfig = {
     return config;
   },
 
-  // Optimize images
+  // Optimize images - allow Supabase storage and any external images
   images: {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: '**',
+        hostname: 'aegqiwlxznmhkaykwisg.supabase.co',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.supabase.co',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.hackatsuon.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '**', // Allow all HTTPS images (lenient)
       },
     ],
+    unoptimized: true, // Disable optimization for external images (faster, lenient)
   },
 
   // Environment variables validation
