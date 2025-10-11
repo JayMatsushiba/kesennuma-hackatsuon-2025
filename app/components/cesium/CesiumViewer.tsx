@@ -30,7 +30,6 @@ export default function CesiumViewer({
   onStoryClick,
   className = '',
 }: CesiumViewerProps) {
-  const [selectedStory, setSelectedStory] = useState<EntityClickEvent | null>(null);
   const [selectedStoryId, setSelectedStoryId] = useState<string | null>(null);
   const [allStories, setAllStories] = useState<Story[]>([]);
   const [nearbyStories, setNearbyStories] = useState<Story[]>([]);
@@ -67,8 +66,8 @@ export default function CesiumViewer({
     Cesium,
     enabled: !!viewer && storyMarkersEnabled,
     onEntityClick: useCallback((event: EntityClickEvent) => {
-      setSelectedStory(event);
-      setSelectedStoryId(String(event.entityId));
+      // Don't auto-select a story - let user choose from the list
+      setSelectedStoryId(null);
 
       // Filter stories to only show those at the clicked location
       const storiesAtLocation = findStoriesAtLocation(
@@ -103,7 +102,7 @@ export default function CesiumViewer({
       // Flatten all stories from deduplicated markers
       // Each feature now has _allStoriesAtLocation containing all stories at that location
       const allFeatures = featureCollection.features.flatMap(feature =>
-        feature.properties._allStoriesAtLocation || [feature]
+        (feature.properties as any)._allStoriesAtLocation || [feature]
       );
 
       const stories: Story[] = allFeatures.map(feature => ({
@@ -182,7 +181,6 @@ export default function CesiumViewer({
   const buildingsEnabled = layers.find(l => l.id === 'osm-buildings')?.enabled ?? true;
   const {
     isLoading: buildingsLoading,
-    toggleOSM,
     osmBuildings,
   } = use3DBuildings({
     viewer,
