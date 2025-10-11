@@ -58,6 +58,35 @@ export default function CesiumViewer({
   // Camera controls
   const { flyToViewpoint, resetView } = useCameraControl({ viewer, Cesium });
 
+  // Handle viewpoint selection (includes dynamic story IDs)
+  const handleViewpointSelect = useCallback((viewpointId: string) => {
+    // Check if it's a story viewpoint (format: "story-123")
+    if (viewpointId.startsWith('story-') && storyDataSource) {
+      const storyId = parseInt(viewpointId.replace('story-', ''));
+      const entities = storyDataSource.entities.values;
+      const entity = entities.find((e: any) => e.id === storyId || e._kesennumaFeature?.id === storyId);
+
+      if (entity && viewer) {
+        viewer.flyTo(entity, {
+          duration: 1.5,
+          offset: new (Cesium as any).HeadingPitchRange(
+            0,
+            (Cesium as any).Math.toRadians(-30),
+            500
+          ),
+        }).then(() => {
+          // Set as selected entity AFTER camera flight completes
+          // This shows the infoBox with story details
+          viewer.selectedEntity = entity;
+          viewer.scene.requestRender();
+        });
+      }
+    } else {
+      // Use standard viewpoint
+      flyToViewpoint(viewpointId);
+    }
+  }, [flyToViewpoint, storyDataSource, viewer, Cesium]);
+
   // 3D Buildings (OSM - 350M+ buildings worldwide)
   const buildingsEnabled = layers.find(l => l.id === 'osm-buildings')?.enabled ?? true;
   const {
@@ -120,7 +149,7 @@ export default function CesiumViewer({
 
       {/* Viewpoint selector overlay */}
       {showViewpointSelector && viewer && (
-        <ViewpointSelector onSelectViewpoint={flyToViewpoint} onReset={resetView} />
+        <ViewpointSelector onSelectViewpoint={handleViewpointSelect} onReset={resetView} />
       )}
 
       {/* Layers control panel */}
