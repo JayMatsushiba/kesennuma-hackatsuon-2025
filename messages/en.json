@@ -1,6 +1,6 @@
 {
   "common": {
-    "title": "KesenMemento | ケセメメント",
+    "title": "KesenMemento | ケセンメメント",
     "subtitle": "Explore memories and experiences through 3D maps",
     "submit": "Submit Your Story",
     "explore": "Explore 3D Map",
@@ -8,7 +8,7 @@
     "language": "Language"
   },
   "metadata": {
-    "title": "KesenMemento | ケセメメント",
+    "title": "KesenMemento | ケセンメメント",
     "description": "Explore Kesennuma's memories through 3D maps. A platform to share memories of the tsunami, fishing culture, and everyday joy."
   },
   "hero": {
@@ -193,6 +193,51 @@
       "name": "Local Community",
       "role": "Storytellers",
       "description": "Local residents who share daily life and memories of Kesennuma."
+    }
+  },
+  "auth": {
+    "loginButton": "Login with LINE",
+    "loginTitle": "Login",
+    "welcomeTitle": "Welcome to Kesennuma Digital Stamp Rally",
+    "welcomeSubtitle": "Login with LINE to collect stamps",
+    "connected": "Connected",
+    "logout": "Logout",
+    "loginRequired": "Login Required",
+    "loginMessage": "Please login with LINE to collect stamps. A wallet will be automatically created for you when you login."
+  },
+  "stamps": {
+    "title": "Digital Stamp Rally",
+    "subtitle": "Visit Kesennuma landmarks and collect stamps",
+    "description": "Visit actual locations in Kesennuma and collect digital stamps. Each stamp is issued as an NFT on the blockchain, becoming your unique collection.",
+    "progress": "Progress",
+    "collected": "Collected",
+    "notCollected": "Not Collected",
+    "visitToCollect": "Visit to Collect",
+    "backToHome": "Back to Home",
+    "viewOnBlockchain": "View on Blockchain",
+    "scan": {
+      "title": "Collect Stamp",
+      "loading": "Loading...",
+      "invalid": "Invalid QR code",
+      "alreadyCollected": "You already collected this stamp",
+      "success": "Stamp Collected!",
+      "failed": "Failed to collect stamp",
+      "collectButton": "Collect This Stamp",
+      "collecting": "Collecting...",
+      "viewCollection": "View Collection",
+      "locationInfo": "Location Information",
+      "howToCollect": "Scan the QR code at this location to collect the stamp",
+      "gpsPermissionDenied": "Location permission denied. Please enable location services in your browser settings.",
+      "gpsTimeout": "GPS timeout. Please try again in an open area with clear sky view.",
+      "tooFarAway": "You are too far from this location. Please visit the actual location to collect the stamp."
+    },
+    "collection": {
+      "title": "My Collection",
+      "empty": "No stamps collected yet",
+      "emptyMessage": "Visit Kesennuma landmarks to collect stamps!",
+      "total": "{{collected}} of {{total}} collected",
+      "collectedOn": "Collected on",
+      "mintedOn": "Minted on blockchain"
     }
   }
 }

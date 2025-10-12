@@ -1,6 +1,6 @@
 {
   "common": {
-    "title": "KesenMemento | ケセメメント",
+    "title": "KesenMemento | ケセンメメント",
     "subtitle": "3D地図で巡る、みんなの記憶と体験",
     "submit": "投稿する",
     "explore": "3D地図を探索する",
@@ -8,7 +8,7 @@
     "language": "言語"
   },
   "metadata": {
-    "title": "KesenMemento | ケセメメント",
+    "title": "KesenMemento | ケセンメメント",
     "description": "3D地図で巡る気仙沼の記憶と体験。震災の記憶、漁業の文化、日常の喜びを共有するプラットフォーム。"
   },
   "hero": {
@@ -225,7 +225,10 @@
       "collecting": "獲得中...",
       "viewCollection": "コレクションを見る",
       "locationInfo": "場所情報",
-      "howToCollect": "この場所でQRコードをスキャンしてスタンプを獲得できます"
+      "howToCollect": "この場所でQRコードをスキャンしてスタンプを獲得できます",
+      "gpsPermissionDenied": "位置情報の許可が拒否されました。ブラウザの設定で位置情報を有効にしてください。",
+      "gpsTimeout": "GPS取得がタイムアウトしました。空が見える開けた場所で再度お試しください。",
+      "tooFarAway": "この場所から遠すぎます。実際の場所を訪問してスタンプを獲得してください。"
     },
     "collection": {
       "title": "マイコレクション",
