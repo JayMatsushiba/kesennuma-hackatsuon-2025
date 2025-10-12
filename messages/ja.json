@@ -193,5 +193,47 @@
       "role": "ストーリーテラー",
       "description": "気仙沼の日常と記憶を共有してくださる地域の皆様。"
     }
+  },
+  "auth": {
+    "loginButton": "LINEでログイン",
+    "loginTitle": "ログイン",
+    "welcomeTitle": "気仙沼デジタルスタンプラリーへようこそ",
+    "welcomeSubtitle": "LINEでログインしてスタンプを集めよう",
+    "connected": "接続済み",
+    "logout": "ログアウト",
+    "loginRequired": "ログインが必要です",
+    "loginMessage": "スタンプを集めるにはLINEでログインしてください。ログインするとあなた専用のウォレットが自動的に作成されます。"
+  },
+  "stamps": {
+    "title": "デジタルスタンプラリー",
+    "subtitle": "気仙沼の名所を巡ってスタンプを集めよう",
+    "description": "実際に気仙沼の場所を訪れて、デジタルスタンプを集めましょう。各スタンプはブロックチェーン上のNFTとして発行され、あなただけのコレクションになります。",
+    "progress": "進捗状況",
+    "collected": "獲得済み",
+    "notCollected": "未獲得",
+    "visitToCollect": "訪問して獲得",
+    "backToHome": "ホームに戻る",
+    "viewOnBlockchain": "ブロックチェーンで見る",
+    "scan": {
+      "title": "スタンプを獲得",
+      "loading": "読み込み中...",
+      "invalid": "無効なQRコードです",
+      "alreadyCollected": "このスタンプは既に獲得済みです",
+      "success": "スタンプを獲得しました！",
+      "failed": "スタンプの獲得に失敗しました",
+      "collectButton": "このスタンプを獲得する",
+      "collecting": "獲得中...",
+      "viewCollection": "コレクションを見る",
+      "locationInfo": "場所情報",
+      "howToCollect": "この場所でQRコードをスキャンしてスタンプを獲得できます"
+    },
+    "collection": {
+      "title": "マイコレクション",
+      "empty": "まだスタンプを集めていません",
+      "emptyMessage": "気仙沼の名所を訪れてスタンプを集めましょう！",
+      "total": "全{{total}}個中{{collected}}個獲得",
+      "collectedOn": "獲得日時",
+      "mintedOn": "ブロックチェーン記録"
+    }
   }
 }

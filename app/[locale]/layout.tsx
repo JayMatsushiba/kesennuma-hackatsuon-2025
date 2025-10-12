@@ -3,6 +3,7 @@ import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { locales } from '@/i18n/config';
+import DynamicProviderWrapper from '../components/providers/DynamicProviderWrapper';
 import '../globals.css';
 
 type Props = {
@@ -42,9 +43,11 @@ export default async function LocaleLayout({
   return (
     <html lang={locale}>
       <body className="antialiased">
-        <NextIntlClientProvider messages={messages}>
-          {children}
-        </NextIntlClientProvider>
+        <DynamicProviderWrapper>
+          <NextIntlClientProvider messages={messages}>
+            {children}
+          </NextIntlClientProvider>
+        </DynamicProviderWrapper>
       </body>
     </html>
   );

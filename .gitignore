@@ -52,3 +52,10 @@ prisma/*.db-journal
 
 # Reference code (Hiroshima Archive - for study only)
 /hiroshimaArchive_OSS/
+
+# Foundry build artifacts
+/contracts-foundry/out/
+/contracts-foundry/cache/
+/contracts-foundry/broadcast/
+/contracts-foundry/.password
+/contracts-foundry/lib/
