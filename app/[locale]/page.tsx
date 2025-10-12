@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 import HeroCarousel from '../components/landing/HeroCarousel';
 import PlatformExplanation from '../components/landing/PlatformExplanation';
@@ -79,13 +80,22 @@ export default async function HomePage({ params }: Props) {
       <header className="bg-white border-b border-slate-200 sticky top-0 z-50 backdrop-blur-sm bg-white/95">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between gap-4">
-            <div className="flex-1">
-              <h1 className="text-xl md:text-3xl font-bold text-slate-900">
-                {t('common.title')}
-              </h1>
-              <p className="text-xs md:text-base text-slate-600 mt-1">
-                {t('common.subtitle')}
-              </p>
+            <div className="flex items-center gap-4 flex-1">
+              <Image
+                src="/images/kesennuma/logo.jpg"
+                alt="Kesennuma Logo"
+                width={60}
+                height={60}
+                className="rounded-lg object-cover"
+              />
+              <div>
+                <h1 className="text-xl md:text-3xl font-bold text-slate-900">
+                  {t('common.title')}
+                </h1>
+                <p className="text-xs md:text-base text-slate-600 mt-1">
+                  {t('common.subtitle')}
+                </p>
+              </div>
             </div>
             <LanguageSwitcher />
             <Button asChild size="default" className="bg-brand-600 hover:bg-brand-700 text-white hover:text-white transition-colors duration-200 shrink-0">
