@@ -302,6 +302,11 @@ export default async function HomePage({ params }: Props) {
                   </a>
                 </li>
                 <li className="text-slate-400">Kesennuma Hackatsuon 2025</li>
+                <li className="text-slate-400 mt-4">
+                  <span className="text-white font-semibold">Contributors:</span>
+                  <br />
+                  ss251, pavvann, JayMatsushiba
+                </li>
               </ul>
             </div>
           </div>
