@@ -7,16 +7,28 @@ export default async function ContactFeedback() {
 
   const team = [
     {
+      name: 'ss251',
+      role: t('team.development'),
+      link: 'https://github.com/ss251',
+      icon: 'github',
+    },
+    {
       name: 'Jay Matsushiba',
-      role: t('team.lead'),
+      role: t('team.development'),
       link: 'https://github.com/JayMatsushiba',
       icon: 'github',
     },
     {
-      name: t('team.projectTeam'),
+      name: 'pavvann',
       role: t('team.development'),
-      link: 'mailto:contact@kesennuma-digital.jp',
-      icon: 'email',
+      link: 'https://github.com/pavvann',
+      icon: 'github',
+    },
+    {
+      name: 'memeshitome',
+      role: t('team.development'),
+      link: 'https://github.com/memeshitome',
+      icon: 'github',
     },
   ];
 
@@ -36,7 +48,7 @@ export default async function ContactFeedback() {
         <div className="grid md:grid-cols-2 gap-6 mb-12">
           {/* General contact */}
           <a
-            href="mailto:contact@kesennuma-digital.jp"
+            href="mailto:hello@jmatsushiba.com"
             className="block group"
           >
             <Card className="hover:shadow-lg transition-all h-full"
@@ -58,7 +70,7 @@ export default async function ContactFeedback() {
                     {t('generalDesc')}
                   </p>
                   <p className="text-brand-600 font-medium text-sm">
-                    contact@kesennuma-digital.jp
+                    hello@jmatsushiba.com
                   </p>
                 </div>
               </CardContent>
@@ -111,7 +123,7 @@ export default async function ContactFeedback() {
             <CardTitle className="text-xl text-center">{t('teamTitle')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="flex flex-wrap justify-center gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
               {team.map((member, index) => (
                 <a
                   key={index}

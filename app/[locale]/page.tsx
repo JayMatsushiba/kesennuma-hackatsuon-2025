@@ -305,17 +305,21 @@ export default async function HomePage({ params }: Props) {
               <ul className="space-y-2 text-sm">
                 <li>
                   <a
-                    href="mailto:contact@kesennuma-digital.jp"
+                    href="mailto:hello@jmatsushiba.com"
                     className="text-slate-400 hover:text-white transition-colors"
                   >
-                    contact@kesennuma-digital.jp
+                    hello@jmatsushiba.com
                   </a>
                 </li>
                 <li className="text-slate-400">Kesennuma Hackatsuon 2025</li>
                 <li className="text-slate-400 mt-4">
-                  <span className="text-white font-semibold">Contributors:</span>
-                  <br />
-                  ss251, pavvann, JayMatsushiba
+                  <div className="text-white font-semibold mb-2">開発チーム</div>
+                  <div className="text-slate-200 text-sm">
+                    Jay Matsushiba, ss251, pavvann, memeshitome
+                  </div>
+                  <p className="mt-3 text-slate-400 text-xs leading-relaxed">
+                    このプロジェクトは、Kesennuma Hackatsuon 2025で開発されました。気仙沼への愛と、テクノロジーの力で地域を盛り上げたいという想いから生まれたプラットフォームです。
+                  </p>
                 </li>
               </ul>
             </div>
