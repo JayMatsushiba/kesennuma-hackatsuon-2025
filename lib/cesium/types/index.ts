@@ -1,5 +1,5 @@
 /**
- * Cesium TypeScript definitions for Kesmemento
+ * Cesium TypeScript definitions for KesenMemento
  */
 
 // Core Story type (matches Supabase schema)

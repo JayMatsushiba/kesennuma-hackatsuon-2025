@@ -1,4 +1,4 @@
-// Prisma schema for Kesmemento
+// Prisma schema for KesenMemento
 // Using SQLite (Local development)
 
 generator client {

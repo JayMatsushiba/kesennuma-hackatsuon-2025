@@ -1,5 +1,5 @@
 /**
- * Main Cesium 3D viewer component for Kesmemento
+ * Main Cesium 3D viewer component for KesenMemento
  * Integrates viewer initialization, story markers, and camera controls
  */
 

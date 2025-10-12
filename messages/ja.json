@@ -1,6 +1,6 @@
 {
   "common": {
-    "title": "Kesmemento | ケセメメント",
+    "title": "KesenMemento | ケセメメント",
     "subtitle": "3D地図で巡る、みんなの記憶と体験",
     "submit": "投稿する",
     "explore": "3D地図を探索する",
@@ -8,7 +8,7 @@
     "language": "言語"
   },
   "metadata": {
-    "title": "Kesmemento | ケセメメント",
+    "title": "KesenMemento | ケセメメント",
     "description": "3D地図で巡る気仙沼の記憶と体験。震災の記憶、漁業の文化、日常の喜びを共有するプラットフォーム。"
   },
   "hero": {
@@ -49,7 +49,7 @@
     "description": "気仙沼の人々の物語を、3D地図で探索できるデジタルアーカイブ。過去と未来をつなぐ、新しい体験プラットフォームです。",
     "links": "リンク",
     "contact": "お問い合わせ",
-    "copyright": "© 2025 Kesmemento - Built with ❤️ for Kesennuma"
+    "copyright": "© 2025 KesenMemento - Built with ❤️ for Kesennuma"
   },
   "featuredStories": {
     "title": "注目のストーリー",
@@ -131,7 +131,7 @@
     }
   },
   "platform": {
-    "title": "Kesmementoとは",
+    "title": "KesenMementoとは",
     "intro1": "このウェブサイトは、気仙沼に暮らし、育ち、訪れる人々の、",
     "intro1Bold": "かけがえのない物語",
     "intro1End": "を集めたデジタルアーカイブです。",

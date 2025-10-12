@@ -1,6 +1,6 @@
 {
   "common": {
-    "title": "Kesmemento | ケセメメント",
+    "title": "KesenMemento | ケセメメント",
     "subtitle": "Explore memories and experiences through 3D maps",
     "submit": "Submit Your Story",
     "explore": "Explore 3D Map",
@@ -8,7 +8,7 @@
     "language": "Language"
   },
   "metadata": {
-    "title": "Kesmemento | ケセメメント",
+    "title": "KesenMemento | ケセメメント",
     "description": "Explore Kesennuma's memories through 3D maps. A platform to share memories of the tsunami, fishing culture, and everyday joy."
   },
   "hero": {
@@ -49,7 +49,7 @@
     "description": "A digital archive where you can explore the stories of Kesennuma's people through 3D maps. A new experience platform connecting past and future.",
     "links": "Links",
     "contact": "Contact",
-    "copyright": "© 2025 Kesmemento - Built with ❤️ for Kesennuma"
+    "copyright": "© 2025 KesenMemento - Built with ❤️ for Kesennuma"
   },
   "featuredStories": {
     "title": "Featured Stories",
@@ -132,7 +132,7 @@
     }
   },
   "platform": {
-    "title": "About Kesmemento",
+    "title": "About KesenMemento",
     "intro1": "This website is a digital archive collecting the ",
     "intro1Bold": "irreplaceable stories",
     "intro1End": " of people who live, grow, and visit Kesennuma.",
