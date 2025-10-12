@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: Props) {
   const messages = await getMessages({ locale });
 
   return {
-    title: (messages as any).metadata?.title || 'Kesmemento | Kesennuma Memories & Experiences',
+    title: (messages as any).metadata?.title || 'Kesmemento | ケセメメント',
     description: (messages as any).metadata?.description || '3D地図で巡る気仙沼の記憶と体験。',
     keywords: ['気仙沼', 'Kesennuma', '3D地図', 'デジタルアーカイブ', '震災の記憶', '漁業'],
   };
