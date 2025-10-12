@@ -67,7 +67,7 @@ export async function POST(request: Request) {
     }
 
     // 3. Check if contract is configured
-    if (!process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || !process.env.ADMIN_WALLET_ADDRESS || !process.env.THIRDWEB_ADMIN_PRIVATE_KEY) {
+    if (!process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || !process.env.ADMIN_PRIVATE_KEY) {
       console.warn('Contract not configured, saving to database only');
 
       // Save to database without blockchain (for testing)
@@ -110,7 +110,7 @@ export async function POST(request: Request) {
 
     // Create wallet from private key
     const wallet = new ethers.Wallet(
-      process.env.THIRDWEB_ADMIN_PRIVATE_KEY!,
+      process.env.ADMIN_PRIVATE_KEY!,
       provider
     );
 
