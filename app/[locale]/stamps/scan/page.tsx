@@ -8,6 +8,8 @@ import AuthGuard from '@/app/components/auth/AuthGuard';
 import Confetti from 'react-confetti';
 import Link from 'next/link';
 
+const QR_PARAMS_KEY = 'kesennuma_qr_params';
+
 export default function ScanPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -17,8 +19,40 @@ export default function ScanPage() {
   const address = primaryWallet?.address;
   const t = useTranslations('stamps');
 
-  const locationId = searchParams.get('l');
-  const secret = searchParams.get('s');
+  // Get QR parameters from URL or sessionStorage
+  let locationId = searchParams.get('l');
+  let secret = searchParams.get('s');
+
+  // Handle OAuth redirect: restore QR params if missing but stored
+  useEffect(() => {
+    const dynamicOauthCode = searchParams.get('dynamicOauthCode');
+
+    // If we have OAuth params but missing QR params, restore from storage
+    if (dynamicOauthCode && (!locationId || !secret)) {
+      const stored = sessionStorage.getItem(QR_PARAMS_KEY);
+      if (stored) {
+        try {
+          const { l, s } = JSON.parse(stored);
+          // Redirect to clean URL with restored params
+          const newUrl = `/${locale}/stamps/scan?l=${l}&s=${s}`;
+          sessionStorage.removeItem(QR_PARAMS_KEY); // Clean up
+          router.replace(newUrl);
+          return;
+        } catch (e) {
+          console.error('Failed to restore QR params:', e);
+        }
+      }
+    }
+
+    // If we have QR params, store them for potential OAuth flow
+    if (locationId && secret) {
+      sessionStorage.setItem(QR_PARAMS_KEY, JSON.stringify({ l: locationId, s: secret }));
+    }
+  }, [searchParams, locationId, secret, locale, router]);
+
+  // Re-read after potential restoration
+  locationId = searchParams.get('l');
+  secret = searchParams.get('s');
 
   const [loading, setLoading] = useState(true);
   const [collecting, setCollecting] = useState(false);
@@ -58,19 +92,38 @@ export default function ScanPage() {
       // Get GPS location if available
       let latitude: number | undefined;
       let longitude: number | undefined;
+      let accuracy: number | undefined;
 
       if ('geolocation' in navigator) {
         try {
           const position = await new Promise<GeolocationPosition>((resolve, reject) => {
             navigator.geolocation.getCurrentPosition(resolve, reject, {
-              timeout: 5000,
-              enableHighAccuracy: false,
+              timeout: 10000, // Increased timeout
+              enableHighAccuracy: true, // Request high accuracy
+              maximumAge: 0, // Don't use cached position
             });
           });
           latitude = position.coords.latitude;
           longitude = position.coords.longitude;
-        } catch (gpsError) {
-          console.log('GPS not available, continuing without location');
+          accuracy = position.coords.accuracy;
+
+          console.log(`📍 GPS acquired: ${latitude}, ${longitude} (±${Math.round(accuracy)}m)`);
+        } catch (gpsError: any) {
+          console.error('GPS error:', gpsError);
+
+          // Show specific GPS errors
+          if (gpsError.code === 1) {
+            setError(t('scan.gpsPermissionDenied') || 'GPS permission denied. Please enable location services.');
+            setCollecting(false);
+            return;
+          } else if (gpsError.code === 3) {
+            setError(t('scan.gpsTimeout') || 'GPS timeout. Please try again in an open area.');
+            setCollecting(false);
+            return;
+          }
+
+          // For other errors, warn but continue (server will validate)
+          console.warn('GPS not available, server will validate');
         }
       }
 
@@ -90,7 +143,14 @@ export default function ScanPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || t('scan.failed'));
+        // Handle location verification errors specially
+        if (res.status === 403 && data.distance) {
+          setError(
+            `${data.details || t('scan.tooFarAway')} (${data.distance}m away, need to be within ${data.requiredDistance}m)`
+          );
+        } else {
+          setError(data.error || t('scan.failed'));
+        }
         return;
       }
 

@@ -71,5 +71,10 @@
     "nextjs"
   ],
   "author": "Kesennuma Hackatsuon 2025",
+  "contributors": [
+    "ss251",
+    "pavvann",
+    "JayMatsushiba"
+  ],
   "license": "MIT"
 }
