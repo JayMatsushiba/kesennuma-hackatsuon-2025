@@ -23,6 +23,9 @@ export async function generateMetadata({ params }: Props) {
     title: (messages as any).metadata?.title || 'KesenMemento | ケセンメメント',
     description: (messages as any).metadata?.description || '3D地図で巡る気仙沼の記憶と体験。',
     keywords: ['気仙沼', 'Kesennuma', '3D地図', 'デジタルアーカイブ', '震災の記憶', '漁業'],
+    icons: {
+      icon: '/favicon.ico',
+    },
   };
 }
 
